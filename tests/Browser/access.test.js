@@ -7,7 +7,7 @@ test('signed-out visitors are directed to sign-in and cannot read voucher data',
     });
     expect(guestResponse.status()).toBe(401);
 
-    await page.goto('/vouchers');
+    await page.goto('/vouchers', { waitUntil: 'domcontentloaded' });
     await expect(page).toHaveURL(new URL('/login', baseURL).href);
     await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible();
     await expect(page.getByLabel('Username')).toBeVisible();
