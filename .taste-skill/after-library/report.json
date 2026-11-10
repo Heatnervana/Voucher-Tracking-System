@@ -1,0 +1,1344 @@
+{
+ "url": "storage/framework/testing/redesign-library.html",
+ "at": "2026-11-04T07:06:17.352Z",
+ "allow": [],
+ "viewports": [
+  {
+   "width": 1440,
+   "height": 900,
+   "load": "load",
+   "screens": 1,
+   "filled": [
+    0.54
+   ],
+   "motion": {
+    "elements": 0,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "page": {
+     "height": 900,
+     "screens": 1,
+     "words": 78,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 1,
+     "sections": 3,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Voucher library",
+     "words": 2,
+     "chars": 15,
+     "lines": 1,
+     "size": 30,
+     "vw": 2.1,
+     "font": "Segoe UI",
+     "weight": 600,
+     "tracking": -0.02,
+     "leading": 1.2,
+     "top": 195,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "Voucher library",
+     "words": 2,
+     "lines": 1,
+     "size": 30,
+     "font": "Segoe UI"
+    },
+    "headings": [
+     {
+      "text": "Voucher library",
+      "words": 2,
+      "chars": 15,
+      "lines": 1,
+      "size": 30,
+      "vw": 2.1,
+      "font": "Segoe UI",
+      "weight": 600,
+      "tracking": -0.025,
+      "leading": 1.2,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.25,
+      "top": 195,
+      "tag": "h1",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 1,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": null,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Segoe UI",
+       "share": 1,
+       "mono": false
+      }
+     ],
+     "familyCount": 1,
+     "sizes": [
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      30
+     ],
+     "sizeCount": 8,
+     "notLoaded": [],
+     "body": {
+      "font": "Segoe UI",
+      "size": 16,
+      "leading": 1.5,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 5.6
+     },
+     "measureChars": 159,
+     "max": {
+      "size": 30,
+      "vw": 2.1,
+      "font": "Segoe UI",
+      "text": "Voucher library"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 1,
+     "microLabelShare": 0.004,
+     "microSamples": [
+      "ADA"
+     ],
+     "upperShare": 0.04,
+     "centerShare": 0.13,
+     "smallText": 2
+    },
+    "eyebrows": [
+     {
+      "text": "1 voucher(s) saved.",
+      "above": "Voucher library",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 14,
+      "top": 128
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#f3f5f7",
+     "bodyBgHsl": {
+      "h": 210,
+      "s": 0.2,
+      "l": 0.96
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#ffffff",
+       "top": 404,
+       "hsl": {
+        "h": 0,
+        "s": 0,
+        "l": 1
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#526476",
+       "share": 0.39
+      },
+      {
+       "color": "#203548",
+       "share": 0.17
+      },
+      {
+       "color": "#536b75",
+       "share": 0.15
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.09
+      },
+      {
+       "color": "#355665",
+       "share": 0.06
+      }
+     ],
+     "button": {
+      "bg": "#123d52",
+      "hsl": {
+       "h": 200,
+       "s": 0.64,
+       "l": 0.2
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 5,
+     "inHero": 5,
+     "radius": 6,
+     "height": 48,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Skip to content",
+      "Upload vouchers",
+      "Search",
+      "Open PDF"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 4,
+     "hairlineSamples": [
+      "div.panel-heading 1318px",
+      "details#record-management.record-management 1318px",
+      "form#delete-selected-form.selection-toolbar 1274px",
+      "nav.voucher-pagination 1318px"
+     ],
+     "outlinedBoxes": 2,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 2,
+     "boxRadius": 8,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 5,
+     "fixed": false,
+     "height": 88,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": []
+   },
+   "layout": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "pageH": 900,
+    "margins": {
+     "left": 60,
+     "right": 58
+    },
+    "sections": [],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Voucher library",
+      "size": 30,
+      "top": 195,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 83,
+      "n": 3
+     },
+     {
+      "x": 60,
+      "n": 1
+     }
+    ],
+    "leftBlocks": 4,
+    "bodySize": 15,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0.13,
+    "voidBox": {
+     "x": 240,
+     "y": 360,
+     "w": 960,
+     "h": 180
+    }
+   },
+   "app": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "dark": false,
+    "ground": "#f3f5f7",
+    "sidebar": null,
+    "topbar": {
+     "h": 88
+    },
+    "canvas": {
+     "left": 60,
+     "right": 58
+    },
+    "hero": {
+     "text": "Voucher library",
+     "words": 2,
+     "chars": 15,
+     "lines": 1,
+     "size": 30,
+     "vw": 2.1,
+     "font": "Segoe UI",
+     "weight": 600,
+     "tracking": -0.02,
+     "leading": 1.2,
+     "top": 195,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 0,
+    "layout": {
+     "panels": 2,
+     "firstScreen": 2,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 2,
+     "radii": [
+      [
+       8,
+       2
+      ]
+     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
+     "heavyShadows": 0,
+     "softShadows": 0,
+     "shadowSamples": [],
+     "glass": 0
+    },
+    "chips": {
+     "count": 0,
+     "hues": 0,
+     "samples": []
+    },
+    "numbers": {
+     "cells": 2,
+     "leftAligned": 2,
+     "figures": 2,
+     "tabularShare": 0,
+     "kpiMax": 15
+    },
+    "rows": {
+     "count": 2,
+     "median": 77
+    },
+    "chartHues": 0,
+    "placeholders": [],
+    "type": {
+     "under13": 0.09,
+     "tiny": 0,
+     "tinySamples": [],
+     "sizes": [
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      30
+     ]
+    },
+    "title": {
+     "text": "Voucher library",
+     "size": 30,
+     "top": 195
+    },
+    "colourShare": 0.093
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 768,
+   "height": 1024,
+   "load": "load",
+   "screens": 1,
+   "filled": [
+    0.62
+   ],
+   "motion": {
+    "elements": 0,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "page": {
+     "height": 1024,
+     "screens": 1,
+     "words": 78,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 1,
+     "sections": 3,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Voucher library",
+     "words": 2,
+     "chars": 15,
+     "lines": 1,
+     "size": 30,
+     "vw": 3.9,
+     "font": "Segoe UI",
+     "weight": 600,
+     "tracking": -0.02,
+     "leading": 1.2,
+     "top": 195,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "Voucher library",
+     "words": 2,
+     "lines": 1,
+     "size": 30,
+     "font": "Segoe UI"
+    },
+    "headings": [
+     {
+      "text": "Voucher library",
+      "words": 2,
+      "chars": 15,
+      "lines": 1,
+      "size": 30,
+      "vw": 3.9,
+      "font": "Segoe UI",
+      "weight": 600,
+      "tracking": -0.025,
+      "leading": 1.2,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.47,
+      "top": 195,
+      "tag": "h1",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 1,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": null,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Segoe UI",
+       "share": 1,
+       "mono": false
+      }
+     ],
+     "familyCount": 1,
+     "sizes": [
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      30
+     ],
+     "sizeCount": 8,
+     "notLoaded": [],
+     "body": {
+      "font": "Segoe UI",
+      "size": 16,
+      "leading": 1.5,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 5.6
+     },
+     "measureChars": 84,
+     "max": {
+      "size": 30,
+      "vw": 3.9,
+      "font": "Segoe UI",
+      "text": "Voucher library"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 1,
+     "microLabelShare": 0.004,
+     "microSamples": [
+      "ADA"
+     ],
+     "upperShare": 0.04,
+     "centerShare": 0.13,
+     "smallText": 2
+    },
+    "eyebrows": [
+     {
+      "text": "1 voucher(s) saved.",
+      "above": "Voucher library",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 14,
+      "top": 128
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#f3f5f7",
+     "bodyBgHsl": {
+      "h": 210,
+      "s": 0.2,
+      "l": 0.96
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#ffffff",
+       "top": 464,
+       "hsl": {
+        "h": 0,
+        "s": 0,
+        "l": 1
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#526476",
+       "share": 0.39
+      },
+      {
+       "color": "#203548",
+       "share": 0.17
+      },
+      {
+       "color": "#536b75",
+       "share": 0.15
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.09
+      },
+      {
+       "color": "#355665",
+       "share": 0.06
+      }
+     ],
+     "button": {
+      "bg": "#123d52",
+      "hsl": {
+       "h": 200,
+       "s": 0.64,
+       "l": 0.2
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 5,
+     "inHero": 5,
+     "radius": 6,
+     "height": 48,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Skip to content",
+      "Upload vouchers",
+      "Search",
+      "Open PDF"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 4,
+     "hairlineSamples": [
+      "div.panel-heading 718px",
+      "details#record-management.record-management 718px",
+      "form#delete-selected-form.selection-toolbar 674px",
+      "nav.voucher-pagination 718px"
+     ],
+     "outlinedBoxes": 2,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 2,
+     "boxRadius": 8,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 5,
+     "fixed": false,
+     "height": 88,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": []
+   },
+   "layout": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "pageH": 1024,
+    "margins": {
+     "left": 24,
+     "right": 31
+    },
+    "sections": [
+     {
+      "sel": "section.panel.toolbar",
+      "tag": "section",
+      "top": 290,
+      "height": 150,
+      "words": 3,
+      "media": 0,
+      "middle": 12,
+      "heading": null,
+      "left": 49,
+      "right": 49,
+      "textLeft": 81,
+      "textRight": 70,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.panel.table-panel",
+      "tag": "section",
+      "top": 464,
+      "height": 346,
+      "words": 73,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Stored vouchers",
+       "size": 18,
+       "tag": "h2"
+      },
+      "left": 41,
+      "right": 52,
+      "textLeft": 41,
+      "textRight": 52,
+      "fullBleed": false,
+      "footer": true,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Voucher library",
+      "size": 30,
+      "top": 195,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 47,
+      "n": 3
+     },
+     {
+      "x": 24,
+      "n": 1
+     }
+    ],
+    "leftBlocks": 4,
+    "bodySize": 15,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "dark": false,
+    "ground": "#f3f5f7",
+    "sidebar": null,
+    "topbar": {
+     "h": 88
+    },
+    "canvas": {
+     "left": 24,
+     "right": 31
+    },
+    "hero": {
+     "text": "Voucher library",
+     "words": 2,
+     "chars": 15,
+     "lines": 1,
+     "size": 30,
+     "vw": 3.9,
+     "font": "Segoe UI",
+     "weight": 600,
+     "tracking": -0.02,
+     "leading": 1.2,
+     "top": 195,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 0,
+    "layout": {
+     "panels": 2,
+     "firstScreen": 2,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 2,
+     "radii": [
+      [
+       8,
+       2
+      ]
+     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
+     "heavyShadows": 0,
+     "softShadows": 0,
+     "shadowSamples": [],
+     "glass": 0
+    },
+    "chips": {
+     "count": 0,
+     "hues": 0,
+     "samples": []
+    },
+    "numbers": {
+     "cells": 2,
+     "leftAligned": 2,
+     "figures": 2,
+     "tabularShare": 0,
+     "kpiMax": 15
+    },
+    "rows": {
+     "count": 2,
+     "median": 78
+    },
+    "chartHues": 0,
+    "placeholders": [],
+    "type": {
+     "under13": 0.09,
+     "tiny": 0,
+     "tinySamples": [],
+     "sizes": [
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      30
+     ]
+    },
+    "title": {
+     "text": "Voucher library",
+     "size": 30,
+     "top": 195
+    },
+    "colourShare": 0.085
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 390,
+   "height": 844,
+   "load": "load",
+   "screens": 2,
+   "filled": [
+    0.74,
+    0.84
+   ],
+   "motion": {
+    "elements": 0,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "page": {
+     "height": 1043,
+     "screens": 1.2,
+     "words": 78,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 1,
+     "sections": 3,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Voucher library",
+     "words": 2,
+     "chars": 15,
+     "lines": 1,
+     "size": 26,
+     "vw": 6.7,
+     "font": "Segoe UI",
+     "weight": 600,
+     "tracking": -0.02,
+     "leading": 1.2,
+     "top": 223,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "Voucher library",
+     "words": 2,
+     "lines": 1,
+     "size": 26,
+     "font": "Segoe UI"
+    },
+    "headings": [
+     {
+      "text": "Voucher library",
+      "words": 2,
+      "chars": 15,
+      "lines": 1,
+      "size": 26,
+      "vw": 6.7,
+      "font": "Segoe UI",
+      "weight": 600,
+      "tracking": -0.025,
+      "leading": 1.2,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.87,
+      "top": 223,
+      "tag": "h1",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 1,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": null,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Segoe UI",
+       "share": 1,
+       "mono": false
+      }
+     ],
+     "familyCount": 1,
+     "sizes": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      18,
+      26
+     ],
+     "sizeCount": 8,
+     "notLoaded": [],
+     "body": {
+      "font": "Segoe UI",
+      "size": 16,
+      "leading": 1.5,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 5.6
+     },
+     "measureChars": 41,
+     "max": {
+      "size": 26,
+      "vw": 6.7,
+      "font": "Segoe UI",
+      "text": "Voucher library"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 1,
+     "microLabelShare": 0.005,
+     "microSamples": [
+      "ADA"
+     ],
+     "upperShare": 0.04,
+     "centerShare": 0.18,
+     "smallText": 2
+    },
+    "eyebrows": [],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#f3f5f7",
+     "bodyBgHsl": {
+      "h": 210,
+      "s": 0.2,
+      "l": 0.96
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#ffffff",
+       "top": 529,
+       "hsl": {
+        "h": 0,
+        "s": 0,
+        "l": 1
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#526476",
+       "share": 0.35
+      },
+      {
+       "color": "#203548",
+       "share": 0.19
+      },
+      {
+       "color": "#536b75",
+       "share": 0.16
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.1
+      },
+      {
+       "color": "#355665",
+       "share": 0.06
+      }
+     ],
+     "button": {
+      "bg": "#123d52",
+      "hsl": {
+       "h": 200,
+       "s": 0.64,
+       "l": 0.2
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 5,
+     "inHero": 3,
+     "radius": 6,
+     "height": 48,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Skip to content",
+      "Upload vouchers",
+      "Search"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 4,
+     "hairlineSamples": [
+      "div.panel-heading 356px",
+      "details#record-management.record-management 356px",
+      "form#delete-selected-form.selection-toolbar 324px",
+      "nav.voucher-pagination 356px"
+     ],
+     "outlinedBoxes": 2,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 2,
+     "boxRadius": 8,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 5,
+     "fixed": false,
+     "height": 132,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": []
+   },
+   "layout": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "pageH": 1043,
+    "margins": {
+     "left": 16,
+     "right": 20
+    },
+    "sections": [
+     {
+      "sel": "header.topbar",
+      "tag": "header",
+      "top": 0,
+      "height": 132,
+      "words": 9,
+      "media": 0,
+      "middle": 73,
+      "heading": null,
+      "left": 20,
+      "right": 20,
+      "textLeft": 20,
+      "textRight": 20,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "main#main-content.page-wrap",
+      "tag": "main",
+      "top": 156,
+      "height": 805,
+      "words": 92,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Voucher library",
+       "size": 26,
+       "tag": "h1"
+      },
+      "left": 16,
+      "right": 33,
+      "textLeft": 16,
+      "textRight": 33,
+      "fullBleed": false,
+      "footer": true,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Voucher library",
+      "size": 26,
+      "top": 223,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 33,
+      "n": 3
+     },
+     {
+      "x": 16,
+      "n": 1
+     }
+    ],
+    "leftBlocks": 4,
+    "bodySize": 16,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "dark": false,
+    "ground": "#f3f5f7",
+    "sidebar": null,
+    "topbar": null,
+    "canvas": {
+     "left": 16,
+     "right": -33
+    },
+    "hero": {
+     "text": "Voucher library",
+     "words": 2,
+     "chars": 15,
+     "lines": 1,
+     "size": 26,
+     "vw": 6.7,
+     "font": "Segoe UI",
+     "weight": 600,
+     "tracking": -0.02,
+     "leading": 1.2,
+     "top": 223,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 0,
+    "layout": {
+     "panels": 2,
+     "firstScreen": 2,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 3,
+     "radii": [
+      [
+       8,
+       2
+      ],
+      [
+       0,
+       1
+      ]
+     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
+     "heavyShadows": 0,
+     "softShadows": 0,
+     "shadowSamples": [],
+     "glass": 0
+    },
+    "chips": {
+     "count": 0,
+     "hues": 0,
+     "samples": []
+    },
+    "numbers": {
+     "cells": 2,
+     "leftAligned": 2,
+     "figures": 2,
+     "tabularShare": 0,
+     "kpiMax": 15
+    },
+    "rows": {
+     "count": 2,
+     "median": 237
+    },
+    "chartHues": 0,
+    "placeholders": [],
+    "type": {
+     "under13": 0.09,
+     "tiny": 0,
+     "tinySamples": [],
+     "sizes": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      18,
+      26
+     ]
+    },
+    "title": {
+     "text": "Voucher library",
+     "size": 26,
+     "top": 223
+    },
+    "colourShare": 0.154
+   },
+   "consoleErrors": []
+  }
+ ],
+ "findings": [
+  {
+   "level": "WARN",
+   "id": "micro-label",
+   "width": 1440,
+   "message": "1 tiny uppercase letter-spaced label(s): \"ADA\"",
+   "fix": "Prefer sentence case at body size.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "colour-sprawl",
+   "width": 390,
+   "message": "15% of the first screen is strongly coloured.",
+   "fix": "Keep the screen neutral and spend colour on data and status: the studied screens sit near 3%, and only tinted styles reach 10–15%, as pale tints rather than saturated fills."
+  }
+ ],
+ "images": [
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "fold": "C:\\Users\\Stat\\Desktop\\Voucher Tracking Storage System\\.taste-skill\\after-library\\desktop-fold.jpg",
+   "pages": [
+    "C:\\Users\\Stat\\Desktop\\Voucher Tracking Storage System\\.taste-skill\\after-library\\desktop-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "tablet",
+   "width": 768,
+   "fold": "C:\\Users\\Stat\\Desktop\\Voucher Tracking Storage System\\.taste-skill\\after-library\\tablet-fold.jpg",
+   "pages": [
+    "C:\\Users\\Stat\\Desktop\\Voucher Tracking Storage System\\.taste-skill\\after-library\\tablet-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "mobile",
+   "width": 390,
+   "fold": "C:\\Users\\Stat\\Desktop\\Voucher Tracking Storage System\\.taste-skill\\after-library\\mobile-fold.jpg",
+   "pages": [
+    "C:\\Users\\Stat\\Desktop\\Voucher Tracking Storage System\\.taste-skill\\after-library\\mobile-page-01.jpg"
+   ],
+   "film": []
+  }
+ ]
+}

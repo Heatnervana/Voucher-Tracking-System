@@ -1,0 +1,1212 @@
+{
+ "url": "http://127.0.0.1:8080/login",
+ "at": "2026-11-04T07:00:42.602Z",
+ "allow": [],
+ "viewports": [
+  {
+   "width": 1440,
+   "height": 900,
+   "load": "load",
+   "screens": 1,
+   "filled": [
+    0.18
+   ],
+   "motion": {
+    "elements": 0,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "page": {
+     "height": 900,
+     "screens": 1,
+     "words": 26,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 0,
+     "sections": 0,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Welcome back",
+     "words": 2,
+     "chars": 12,
+     "lines": 1,
+     "size": 32,
+     "vw": 2.2,
+     "font": "Georgia",
+     "weight": 600,
+     "tracking": -0.02,
+     "leading": 1.12,
+     "top": 317,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "Welcome back",
+     "words": 2,
+     "lines": 1,
+     "size": 32,
+     "font": "Georgia"
+    },
+    "headings": [
+     {
+      "text": "Welcome back",
+      "words": 2,
+      "chars": 12,
+      "lines": 1,
+      "size": 32,
+      "vw": 2.2,
+      "font": "Georgia",
+      "weight": 600,
+      "tracking": -0.025,
+      "leading": 1.12,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.24,
+      "top": 317,
+      "tag": "h1",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 1,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": null,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Segoe UI",
+       "share": 0.91,
+       "mono": false
+      },
+      {
+       "family": "Georgia",
+       "share": 0.09,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      11,
+      12,
+      14,
+      15,
+      20,
+      32
+     ],
+     "sizeCount": 6,
+     "notLoaded": [],
+     "body": null,
+     "measureChars": null,
+     "max": {
+      "size": 32,
+      "vw": 2.2,
+      "font": "Georgia",
+      "text": "Welcome back"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 1,
+     "microLabelShare": 0.145,
+     "microSamples": [
+      "PORT MANAGEMENT OFFICE"
+     ],
+     "upperShare": 0.16,
+     "centerShare": 0.25,
+     "smallText": 3
+    },
+    "eyebrows": [
+     {
+      "text": "PORT MANAGEMENT OFFICE",
+      "above": "Welcome back",
+      "upper": true,
+      "tracked": true,
+      "mono": false,
+      "pill": false,
+      "size": 12,
+      "top": 289
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#f4f8f8",
+     "bodyBgHsl": {
+      "h": 180,
+      "s": 0.22,
+      "l": 0.96
+     },
+     "dark": false,
+     "sectionBgs": [],
+     "textColors": [
+      {
+       "color": "#536b75",
+       "share": 0.49
+      },
+      {
+       "color": "#378190",
+       "share": 0.14
+      },
+      {
+       "color": "#3c5b68",
+       "share": 0.11
+      },
+      {
+       "color": "#69808a",
+       "share": 0.1
+      },
+      {
+       "color": "#123d52",
+       "share": 0.08
+      }
+     ],
+     "button": {
+      "bg": "#123d52",
+      "hsl": {
+       "h": 200,
+       "s": 0.64,
+       "l": 0.2
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 1,
+     "inHero": 1,
+     "radius": 10,
+     "height": 48,
+     "withShadow": 1,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Sign in →"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 3,
+     "shadowOverlay": 0,
+     "shadowSamples": [
+      "main.login-card → rgba(18, 61, 82, 0.125) 0px 20px 70px 0px",
+      "input → rgba(79, 157, 168, 0.11) 0px 0px 0px 3px",
+      "button.button.primary → rgba(18, 61, 82, 0.125) 0px 5px 12px 0px"
+     ],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 1,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 1,
+     "boxRadius": 18,
+     "squareMedia": 1,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "bg-image",
+      "ratio": 0.34
+     }
+    ],
+    "nav": null,
+    "fontsLoaded": []
+   },
+   "layout": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "pageH": 900,
+    "margins": {
+     "left": 549,
+     "right": 549
+    },
+    "sections": [],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Welcome back",
+      "size": 32,
+      "top": 317,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 549,
+      "n": 1
+     }
+    ],
+    "leftBlocks": 1,
+    "bodySize": 15,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0.23,
+    "voidBox": {
+     "x": 0,
+     "y": 360,
+     "w": 540,
+     "h": 540
+    }
+   },
+   "app": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "dark": false,
+    "ground": "#f4f8f8",
+    "sidebar": null,
+    "topbar": null,
+    "canvas": {
+     "left": 549,
+     "right": 549
+    },
+    "hero": {
+     "text": "Welcome back",
+     "words": 2,
+     "chars": 12,
+     "lines": 1,
+     "size": 32,
+     "vw": 2.2,
+     "font": "Georgia",
+     "weight": 600,
+     "tracking": -0.02,
+     "leading": 1.12,
+     "top": 317,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 0,
+    "layout": {
+     "panels": 1,
+     "firstScreen": 1,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 1,
+     "radii": [
+      [
+       18,
+       1
+      ]
+     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
+     "heavyShadows": 1,
+     "softShadows": 0,
+     "shadowSamples": [
+      "rgba(18, 61, 82, 0.125) 0px 20px 70px 0px"
+     ],
+     "glass": 0
+    },
+    "chips": {
+     "count": 0,
+     "hues": 0,
+     "samples": []
+    },
+    "numbers": {
+     "cells": 0,
+     "leftAligned": 0,
+     "figures": 0,
+     "tabularShare": null,
+     "kpiMax": null
+    },
+    "rows": null,
+    "chartHues": 0,
+    "placeholders": [],
+    "type": {
+     "under13": 0.45,
+     "tiny": 0,
+     "tinySamples": [],
+     "sizes": [
+      11,
+      12,
+      14,
+      15,
+      32
+     ]
+    },
+    "title": {
+     "text": "Welcome back",
+     "size": 32,
+     "top": 317
+    },
+    "colourShare": 0.011
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 768,
+   "height": 1024,
+   "load": "load",
+   "screens": 1,
+   "filled": [
+    0.34
+   ],
+   "motion": {
+    "elements": 0,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "page": {
+     "height": 1024,
+     "screens": 1,
+     "words": 26,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 0,
+     "sections": 0,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Welcome back",
+     "words": 2,
+     "chars": 12,
+     "lines": 1,
+     "size": 32,
+     "vw": 4.2,
+     "font": "Georgia",
+     "weight": 600,
+     "tracking": -0.02,
+     "leading": 1.12,
+     "top": 379,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "Welcome back",
+     "words": 2,
+     "lines": 1,
+     "size": 32,
+     "font": "Georgia"
+    },
+    "headings": [
+     {
+      "text": "Welcome back",
+      "words": 2,
+      "chars": 12,
+      "lines": 1,
+      "size": 32,
+      "vw": 4.2,
+      "font": "Georgia",
+      "weight": 600,
+      "tracking": -0.025,
+      "leading": 1.12,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.45,
+      "top": 379,
+      "tag": "h1",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 1,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": null,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Segoe UI",
+       "share": 0.91,
+       "mono": false
+      },
+      {
+       "family": "Georgia",
+       "share": 0.09,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      11,
+      12,
+      14,
+      15,
+      20,
+      32
+     ],
+     "sizeCount": 6,
+     "notLoaded": [],
+     "body": null,
+     "measureChars": null,
+     "max": {
+      "size": 32,
+      "vw": 4.2,
+      "font": "Georgia",
+      "text": "Welcome back"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 1,
+     "microLabelShare": 0.145,
+     "microSamples": [
+      "PORT MANAGEMENT OFFICE"
+     ],
+     "upperShare": 0.16,
+     "centerShare": 0.25,
+     "smallText": 3
+    },
+    "eyebrows": [
+     {
+      "text": "PORT MANAGEMENT OFFICE",
+      "above": "Welcome back",
+      "upper": true,
+      "tracked": true,
+      "mono": false,
+      "pill": false,
+      "size": 12,
+      "top": 351
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#f4f8f8",
+     "bodyBgHsl": {
+      "h": 180,
+      "s": 0.22,
+      "l": 0.96
+     },
+     "dark": false,
+     "sectionBgs": [],
+     "textColors": [
+      {
+       "color": "#536b75",
+       "share": 0.49
+      },
+      {
+       "color": "#378190",
+       "share": 0.14
+      },
+      {
+       "color": "#3c5b68",
+       "share": 0.11
+      },
+      {
+       "color": "#69808a",
+       "share": 0.1
+      },
+      {
+       "color": "#123d52",
+       "share": 0.08
+      }
+     ],
+     "button": {
+      "bg": "#123d52",
+      "hsl": {
+       "h": 200,
+       "s": 0.64,
+       "l": 0.2
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 1,
+     "inHero": 1,
+     "radius": 10,
+     "height": 48,
+     "withShadow": 1,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Sign in →"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 3,
+     "shadowOverlay": 0,
+     "shadowSamples": [
+      "main.login-card → rgba(18, 61, 82, 0.125) 0px 20px 70px 0px",
+      "input → rgba(79, 157, 168, 0.11) 0px 0px 0px 3px",
+      "button.button.primary → rgba(18, 61, 82, 0.125) 0px 5px 12px 0px"
+     ],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 1,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 1,
+     "boxRadius": 18,
+     "squareMedia": 1,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "bg-image",
+      "ratio": 0.3
+     }
+    ],
+    "nav": null,
+    "fontsLoaded": []
+   },
+   "layout": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "pageH": 1024,
+    "margins": {
+     "left": 213,
+     "right": 213
+    },
+    "sections": [],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Welcome back",
+      "size": 32,
+      "top": 379,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 213,
+      "n": 1
+     }
+    ],
+    "leftBlocks": 1,
+    "bodySize": 15,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "dark": false,
+    "ground": "#f4f8f8",
+    "sidebar": null,
+    "topbar": null,
+    "canvas": {
+     "left": 213,
+     "right": 213
+    },
+    "hero": {
+     "text": "Welcome back",
+     "words": 2,
+     "chars": 12,
+     "lines": 1,
+     "size": 32,
+     "vw": 4.2,
+     "font": "Georgia",
+     "weight": 600,
+     "tracking": -0.02,
+     "leading": 1.12,
+     "top": 379,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 0,
+    "layout": {
+     "panels": 1,
+     "firstScreen": 1,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 1,
+     "radii": [
+      [
+       18,
+       1
+      ]
+     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
+     "heavyShadows": 1,
+     "softShadows": 0,
+     "shadowSamples": [
+      "rgba(18, 61, 82, 0.125) 0px 20px 70px 0px"
+     ],
+     "glass": 0
+    },
+    "chips": {
+     "count": 0,
+     "hues": 0,
+     "samples": []
+    },
+    "numbers": {
+     "cells": 0,
+     "leftAligned": 0,
+     "figures": 0,
+     "tabularShare": null,
+     "kpiMax": null
+    },
+    "rows": null,
+    "chartHues": 0,
+    "placeholders": [],
+    "type": {
+     "under13": 0.45,
+     "tiny": 0,
+     "tinySamples": [],
+     "sizes": [
+      11,
+      12,
+      14,
+      15,
+      32
+     ]
+    },
+    "title": {
+     "text": "Welcome back",
+     "size": 32,
+     "top": 379
+    },
+    "colourShare": 0.023
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 390,
+   "height": 844,
+   "load": "load",
+   "screens": 1,
+   "filled": [
+    0.55
+   ],
+   "motion": {
+    "elements": 0,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "page": {
+     "height": 844,
+     "screens": 1,
+     "words": 26,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 0,
+     "sections": 0,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Welcome back",
+     "words": 2,
+     "chars": 12,
+     "lines": 1,
+     "size": 32,
+     "vw": 8.2,
+     "font": "Georgia",
+     "weight": 600,
+     "tracking": -0.02,
+     "leading": 1.12,
+     "top": 277,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "Welcome back",
+     "words": 2,
+     "lines": 1,
+     "size": 32,
+     "font": "Georgia"
+    },
+    "headings": [
+     {
+      "text": "Welcome back",
+      "words": 2,
+      "chars": 12,
+      "lines": 1,
+      "size": 32,
+      "vw": 8.2,
+      "font": "Georgia",
+      "weight": 600,
+      "tracking": -0.025,
+      "leading": 1.12,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.73,
+      "top": 277,
+      "tag": "h1",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 1,
+     "maxLines": 1,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": null,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Segoe UI",
+       "share": 0.91,
+       "mono": false
+      },
+      {
+       "family": "Georgia",
+       "share": 0.09,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      11,
+      12,
+      14,
+      15,
+      20,
+      32
+     ],
+     "sizeCount": 6,
+     "notLoaded": [],
+     "body": null,
+     "measureChars": null,
+     "max": {
+      "size": 32,
+      "vw": 8.2,
+      "font": "Georgia",
+      "text": "Welcome back"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 1,
+     "microLabelShare": 0.145,
+     "microSamples": [
+      "PORT MANAGEMENT OFFICE"
+     ],
+     "upperShare": 0.16,
+     "centerShare": 0.25,
+     "smallText": 3
+    },
+    "eyebrows": [
+     {
+      "text": "PORT MANAGEMENT OFFICE",
+      "above": "Welcome back",
+      "upper": true,
+      "tracked": true,
+      "mono": false,
+      "pill": false,
+      "size": 12,
+      "top": 249
+     }
+    ],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#f4f8f8",
+     "bodyBgHsl": {
+      "h": 180,
+      "s": 0.22,
+      "l": 0.96
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#ffffff",
+       "top": 144,
+       "hsl": {
+        "h": 0,
+        "s": 0,
+        "l": 1
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#536b75",
+       "share": 0.49
+      },
+      {
+       "color": "#378190",
+       "share": 0.14
+      },
+      {
+       "color": "#3c5b68",
+       "share": 0.11
+      },
+      {
+       "color": "#69808a",
+       "share": 0.1
+      },
+      {
+       "color": "#123d52",
+       "share": 0.08
+      }
+     ],
+     "button": {
+      "bg": "#123d52",
+      "hsl": {
+       "h": 200,
+       "s": 0.64,
+       "l": 0.2
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 1,
+     "inHero": 1,
+     "radius": 10,
+     "height": 48,
+     "withShadow": 1,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Sign in →"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 3,
+     "shadowOverlay": 0,
+     "shadowSamples": [
+      "main.login-card → rgba(18, 61, 82, 0.125) 0px 20px 70px 0px",
+      "input → rgba(79, 157, 168, 0.11) 0px 0px 0px 3px",
+      "button.button.primary → rgba(18, 61, 82, 0.125) 0px 5px 12px 0px"
+     ],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 1,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 1,
+     "boxRadius": 18,
+     "squareMedia": 1,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "bg-image",
+      "ratio": 0.37
+     }
+    ],
+    "nav": null,
+    "fontsLoaded": []
+   },
+   "layout": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "pageH": 844,
+    "margins": {
+     "left": 53,
+     "right": 53
+    },
+    "sections": [],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Welcome back",
+      "size": 32,
+      "top": 277,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 53,
+      "n": 1
+     }
+    ],
+    "leftBlocks": 1,
+    "bodySize": 15,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "dark": false,
+    "ground": "#f4f8f8",
+    "sidebar": null,
+    "topbar": null,
+    "canvas": {
+     "left": 53,
+     "right": 53
+    },
+    "hero": {
+     "text": "Welcome back",
+     "words": 2,
+     "chars": 12,
+     "lines": 1,
+     "size": 32,
+     "vw": 8.2,
+     "font": "Georgia",
+     "weight": 600,
+     "tracking": -0.02,
+     "leading": 1.12,
+     "top": 277,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 0,
+    "layout": {
+     "panels": 1,
+     "firstScreen": 1,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 1,
+     "radii": [
+      [
+       18,
+       1
+      ]
+     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
+     "heavyShadows": 1,
+     "softShadows": 0,
+     "shadowSamples": [
+      "rgba(18, 61, 82, 0.125) 0px 20px 70px 0px"
+     ],
+     "glass": 0
+    },
+    "chips": {
+     "count": 0,
+     "hues": 0,
+     "samples": []
+    },
+    "numbers": {
+     "cells": 0,
+     "leftAligned": 0,
+     "figures": 0,
+     "tabularShare": null,
+     "kpiMax": null
+    },
+    "rows": null,
+    "chartHues": 0,
+    "placeholders": [],
+    "type": {
+     "under13": 0.45,
+     "tiny": 0,
+     "tinySamples": [],
+     "sizes": [
+      11,
+      12,
+      14,
+      15,
+      32
+     ]
+    },
+    "title": {
+     "text": "Welcome back",
+     "size": 32,
+     "top": 277
+    },
+    "colourShare": 0.05
+   },
+   "consoleErrors": []
+  }
+ ],
+ "findings": [
+  {
+   "level": "WARN",
+   "id": "micro-label",
+   "width": 1440,
+   "message": "1 tiny uppercase letter-spaced label(s): \"PORT MANAGEMENT OFFICE\"",
+   "fix": "Prefer sentence case at body size.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "button-fx",
+   "width": 1440,
+   "message": "Buttons with shadow/glow.",
+   "fix": "Flat fill, one colour.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "heavy-shadow",
+   "width": 1440,
+   "message": "1 panel shadow(s) heavy enough to read as floating: rgba(18, 61, 82, 0.125) 0px 20px 70px 0px",
+   "fix": "Panels sit on the ground: separate them with a fill one step from the ground or a quiet 1px border. A shadow, if any, is under 8% black with a small blur. Real overlays (menus, dialogs, popovers) may float.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "app-title-size",
+   "width": 390,
+   "message": "The h1 is 32px (\"Welcome back\").",
+   "fix": "An app screen is not a landing page: the title is 18-32px (20-24px on a phone)."
+  }
+ ],
+ "images": [
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "fold": "C:\\Users\\Stat\\Desktop\\Voucher Tracking Storage System\\.taste-skill\\before\\desktop-fold.jpg",
+   "pages": [
+    "C:\\Users\\Stat\\Desktop\\Voucher Tracking Storage System\\.taste-skill\\before\\desktop-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "tablet",
+   "width": 768,
+   "fold": "C:\\Users\\Stat\\Desktop\\Voucher Tracking Storage System\\.taste-skill\\before\\tablet-fold.jpg",
+   "pages": [
+    "C:\\Users\\Stat\\Desktop\\Voucher Tracking Storage System\\.taste-skill\\before\\tablet-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "mobile",
+   "width": 390,
+   "fold": "C:\\Users\\Stat\\Desktop\\Voucher Tracking Storage System\\.taste-skill\\before\\mobile-fold.jpg",
+   "pages": [
+    "C:\\Users\\Stat\\Desktop\\Voucher Tracking Storage System\\.taste-skill\\before\\mobile-page-01.jpg"
+   ],
+   "film": []
+  }
+ ]
+}
