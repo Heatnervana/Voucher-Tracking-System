@@ -14,7 +14,7 @@ Complete the five readiness items: update the native server, investigate histori
 - [ ] Run the existing actual 5,000,000,000-byte folder upload test, including nested entries, exact-limit behavior, finalization and PDF hash verification.
 - [ ] Test a physical phone and another office PC with the user, covering sign-in and multiple PDF pages. Record device observations separately from automated browser evidence.
 - [x] Write the developer guide and machine-specific settings catalogue, with source/workflow maps, business rules, database relationships, setup/tests and integration limits.
-- [ ] Review all pending changes, inspect upstream Git differences, run relevant regression/build/secret checks, and create a local release commit/tag with known limitations. Publishing is a separate action.
+- [x] Review all pending changes, inspect upstream Git differences, run relevant regression/build/secret checks, and create a local release-candidate commit/tag with known limitations. Publishing is a separate action; see `RELEASE_READINESS.md` and tag `v0.1.0-rc.1`.
 - [ ] Present the tested service-path changes and rollback instructions before a live native-server cutover. Apply only after approval; recheck private HTTPS, startup, OCR, backups and client access after switching.
 
 ## Isolation and rollback

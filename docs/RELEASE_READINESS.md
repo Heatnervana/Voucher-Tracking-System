@@ -10,7 +10,7 @@ This record covers the local readiness work and its limits. It is a release-cand
 | Historical OCR failures | **Reviewed and reconciled.** Retain all 35 records; no obsolete job was replayed or deleted. |
 | Backup, recovery and startup | **Fresh full backup and isolated restore verified**, including application smoke. Existing startup tasks inspected; a real reboot/cutover verification remains pending. |
 | Real devices and full-size upload | User reported recovered responsiveness after the login fixes. Full phone/PDF acceptance and second-PC testing remain separate checks; the user deferred the PC test to **2026-11-13**. An elevated full-size test passed both oversize rejection cases and transferred about 3.42 GB before the operator stopped it after the live response monitor timed out. **No completed 5 GB transfer is claimed.** |
-| Developer handoff and Git baseline | Developer/configuration guides and reviewed tests added. Local release-candidate commit/tag will identify the resulting source; publishing requires a separate action. |
+| Developer handoff and Git baseline | **Complete as a local candidate:** developer/configuration guides, reviewed tests and tag `v0.1.0-rc.1` on `codex/office-readiness-20261112`. Nothing was pushed or published. |
 
 ## Native runtime preparation
 
@@ -56,6 +56,14 @@ The native configuration review caught an inherited-options error: the main defa
 Two sandbox full-size attempts generated the synthetic input but failed before Apache startup. A later approved isolated test reached native Apache **Syntax OK**, rejected a **5,000,000,001-byte folder** and a **524,288,001-byte PDF**, and began transferring ten 500,000,000-byte PDFs, including five nested entries. After about **3.42 GB / 68%**, the live sign-in monitor timed out at 12 seconds. The operator terminated only the identified test process tree, checked its unique fixture boundary/reparse points and removed its disposable data. Live sign-in then returned **200 in 1.38 seconds**. Finalization and complete byte-hash acceptance were not reached. This identifies an operational load constraint, not a completed capacity test or a proven defect in one particular component. Repeat outside office use or on a separate test host with resource monitoring.
 
 Neither native approval nor a real restart is implied by fixture success. Do not run a multi-gigabyte stress check on the working server during office use merely to obtain a passing checkbox.
+
+## Local source checkpoint
+
+The candidate includes the earlier approved security, UI, CI/readiness and cleanup work, plus the developer handoff and incident fixes. Upstream `origin/main` was fetched and reconciled; the merge's source tree was identical to the tested candidate. Three overlapping PHP conflicts were resolved with the tested versions. This reconciliation should have run in an isolated checkout; no further live-tree merge is part of the operating procedure. Final live sign-in returned **200 in 1.26 seconds** after resolution.
+
+The final source-only export contained **302 nonignored files** and the redacted secret scan reported **zero findings**. Private environment/cache files, databases, PDFs, backup/recovery copies, native binaries and runtime logs remain outside Git. JavaScript checks passed **21 tests** and Vite built successfully; the existing optional-font-fallback and runtime login-image warnings remain nonfatal.
+
+Use `git show v0.1.0-rc.1 --stat` to inspect the local checkpoint. Treat it as a candidate with the open acceptance items below. Do not switch branches or merge source in a running office checkout; prepare a separate checkout and promote reviewed files during maintenance. Local Git history does not constitute a GitHub publication or hosted-CI run.
 
 ## Remaining approval and acceptance
 
