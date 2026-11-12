@@ -24,7 +24,8 @@ class CreateStaffAccount extends Command
     protected $description = 'Create a staff account that can only search and view voucher PDFs';
 
     /**
-     * Execute the console command.
+     * TRUST-BOUNDARY: Console input cannot select privileges; this command always creates staff.
+     * SECURITY: Display the random temporary credential only to the console operator, never application logs.
      */
     public function handle(): int
     {

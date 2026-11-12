@@ -5,6 +5,8 @@ namespace App;
 class VoucherAmountExtractor
 {
     /**
+     * SECURITY: Ambiguous headings, amounts or low-confidence text require manual review instead of a guessed amount.
+     *
      * @param  array<int, array{text: string, left: float|int, top: float|int, width: float|int, height: float|int, confidence: float|int}>  $words
      */
     public function extract(array $words): ?string
@@ -96,6 +98,9 @@ class VoucherAmountExtractor
         return $amounts[0];
     }
 
+    /**
+     * TRUST-BOUNDARY: OCR must match the supported positive decimal format and precision before it can become an amount.
+     */
     private function normalizeAmount(string $text): ?string
     {
         if (! preg_match('/^(?:PHP|₱|P)?\s*((?:[0-9]{1,3}(?:,[0-9]{3})+|[0-9]+))\.([0-9]{2})$/u', trim($text), $matches)) {

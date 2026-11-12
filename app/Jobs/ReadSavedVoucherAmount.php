@@ -30,6 +30,9 @@ class ReadSavedVoucherAmount implements ShouldQueue
         $this->onConnection('database')->onQueue('voucher-ocr');
     }
 
+    /**
+     * SECURITY: Matching read tokens and conditional updates prevent stale OCR from replacing manual or newer results.
+     */
     public function handle(PdfAmountReader $reader): void
     {
         $voucher = Voucher::query()->find($this->voucherId);
@@ -54,6 +57,9 @@ class ReadSavedVoucherAmount implements ShouldQueue
         });
     }
 
+    /**
+     * SECURITY: Failure may change only the still-pending read generation and must preserve manual edits.
+     */
     public function failed(?Throwable $exception): void
     {
         Voucher::query()->whereKey($this->voucherId)->whereNull('amount')->where('amount_status', 'pending')->where('amount_read_token', $this->readToken)

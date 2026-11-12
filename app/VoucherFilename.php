@@ -4,7 +4,11 @@ namespace App;
 
 class VoucherFilename
 {
-    /** @return array{checkada_no: string, dv_number: string, payee: string}|null */
+    /**
+     * TRUST-BOUNDARY: Client filenames provide metadata suggestions only and never become storage paths directly.
+     *
+     * @return array{checkada_no: string, dv_number: string, payee: string}|null
+     */
     public function parse(string $filename): ?array
     {
         if (! preg_match('/^([A-Za-z0-9-]{1,40})_([0-9]{6,12})_(.+)\.pdf$/i', $filename, $matches)) {

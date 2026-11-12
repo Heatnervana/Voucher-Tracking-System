@@ -1,3 +1,4 @@
+# TRUST-BOUNDARY: Queued OCR supplies server-owned PDF paths and a generated temporary image path.
 param(
     [Parameter(Mandatory = $true)][string] $PdfPath,
     [Parameter(Mandatory = $true)][string] $ImagePath
@@ -18,6 +19,7 @@ function Wait-WinRtResult($Operation, [Type] $ResultType) {
 
 $source = Wait-WinRtResult (
     [Windows.Storage.StorageFile,Windows.Storage,ContentType=WindowsRuntime]::GetFileFromPathAsync(
+        # SECURITY: Literal path lookup keeps PDF names from becoming PowerShell wildcard expressions.
         (Get-Item -LiteralPath $PdfPath).FullName
     )
 ) ([Windows.Storage.StorageFile,Windows.Storage,ContentType=WindowsRuntime])
@@ -29,6 +31,7 @@ $page = $null
 $stream = $null
 $reader = $null
 try {
+    # SECURITY: Only the first page is rendered; the caller enforces the subprocess timeout.
     $page = $pdf.GetPage(0)
     $stream = [Windows.Storage.Streams.InMemoryRandomAccessStream,Windows.Storage.Streams,ContentType=WindowsRuntime]::new()
     $options = [Windows.Data.Pdf.PdfPageRenderOptions,Windows.Data.Pdf,ContentType=WindowsRuntime]::new()

@@ -54,9 +54,9 @@
         <div class="bulk-delete-actions">
             @if (isset($filters['month']))
                 @php($monthName = \Carbon\Carbon::create()->month((int) $filters['month'])->format('F'))
-                <form method="POST" action="{{ route('vouchers.destroy-month') }}" onsubmit="return confirm('Move {{ $monthCount }} voucher(s) and PDF(s) from {{ $filters['year'] }} / {{ $filters['type'] }} / {{ $monthName }} to the recycle bin?');">@csrf @method('DELETE')<input type="hidden" name="year" value="{{ $filters['year'] }}"><input type="hidden" name="type" value="{{ $filters['type'] }}"><input type="hidden" name="month" value="{{ $filters['month'] }}"><button class="button danger" type="submit" @disabled($monthCount === 0)>Delete {{ $monthName }} ({{ $monthCount }})</button></form>
+                <form method="POST" action="{{ route('vouchers.destroy-month') }}" data-confirm="Move {{ $monthCount }} voucher(s) and PDF(s) from {{ $filters['year'] }} / {{ $filters['type'] }} / {{ $monthName }} to the recycle bin?">@csrf @method('DELETE')<input type="hidden" name="year" value="{{ $filters['year'] }}"><input type="hidden" name="type" value="{{ $filters['type'] }}"><input type="hidden" name="month" value="{{ $filters['month'] }}"><button class="button danger" type="submit" @disabled($monthCount === 0)>Delete {{ $monthName }} ({{ $monthCount }})</button></form>
             @endif
-            <form method="POST" action="{{ route('vouchers.destroy-folder') }}" onsubmit="return confirm('Move all {{ $folderCount }} voucher(s) and PDF(s) from the {{ $filters['year'] }} / {{ $filters['type'] }} folder, across every month, to the recycle bin?');">@csrf @method('DELETE')<input type="hidden" name="year" value="{{ $filters['year'] }}"><input type="hidden" name="type" value="{{ $filters['type'] }}"><button class="button danger" type="submit" @disabled($folderCount === 0)>Delete entire {{ $filters['year'] }} / {{ $filters['type'] }} folder ({{ $folderCount }})</button></form>
+            <form method="POST" action="{{ route('vouchers.destroy-folder') }}" data-confirm="Move all {{ $folderCount }} voucher(s) and PDF(s) from the {{ $filters['year'] }} / {{ $filters['type'] }} folder, across every month, to the recycle bin?">@csrf @method('DELETE')<input type="hidden" name="year" value="{{ $filters['year'] }}"><input type="hidden" name="type" value="{{ $filters['type'] }}"><button class="button danger" type="submit" @disabled($folderCount === 0)>Delete entire {{ $filters['year'] }} / {{ $filters['type'] }} folder ({{ $folderCount }})</button></form>
         </div>
     </section>
 @endif
@@ -83,7 +83,7 @@
                         <svg class="interface-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12s3-6 9-6 9 6 9 6-3 6-9 6-9-6-9-6Z"/><circle cx="12" cy="12" r="2.5"/></svg>
                     </button>
                     <a class="subtle-link" href="{{ route('vouchers.show', $voucher) }}" aria-label="Open PDF for DV {{ $voucher->dv_number }}">Open PDF</a>
-                    @if ($canManage)<form class="management-action" method="POST" action="{{ route('vouchers.destroy', $voucher) }}" onsubmit="return confirm('Move this saved PDF and voucher to the recycle bin?');">@csrf @method('DELETE')<button class="text-danger" type="submit" aria-label="Delete PDF for DV {{ $voucher->dv_number }}">Delete</button></form>@endif
+                    @if ($canManage)<form class="management-action" method="POST" action="{{ route('vouchers.destroy', $voucher) }}" data-confirm="Move this saved PDF and voucher to the recycle bin?">@csrf @method('DELETE')<button class="text-danger" type="submit" aria-label="Delete PDF for DV {{ $voucher->dv_number }}">Delete</button></form>@endif
                 </div>
             </td>
         </tr>

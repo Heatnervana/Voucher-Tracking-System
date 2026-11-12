@@ -15,7 +15,13 @@ Route::middleware('guest')->group(function (): void {
     Route::post('/login', [AuthController::class, 'store'])->middleware('throttle:10,1');
 });
 
-Route::middleware('auth')->group(function (): void {
+Route::get('/logout', [AuthController::class, 'redirectLogout'])->name('logout.redirect');
+
+/**
+ * SECURITY-FIX: 2026-11-12. Reject sessions whose saved password hash is stale.
+ * TRUST-BOUNDARY: Authenticated browser sessions must follow password revocation.
+ */
+Route::middleware(['auth', 'auth.session'])->group(function (): void {
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');

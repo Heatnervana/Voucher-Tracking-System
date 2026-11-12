@@ -14,7 +14,11 @@ use Throwable;
 
 class VoucherRecycleBin
 {
-    /** @param Collection<int, Voucher> $vouchers */
+    /**
+     * SECURITY: The caller holds the file lock; soft deletion invalidates OCR tokens without removing PDF bytes.
+     *
+     * @param  Collection<int, Voucher>  $vouchers
+     */
     public function trash(Collection $vouchers, ?int $deletedBy): int
     {
         return DB::transaction(function () use ($vouchers, $deletedBy): int {
@@ -37,7 +41,11 @@ class VoucherRecycleBin
         }, 3);
     }
 
-    /** @param Collection<int, Voucher> $vouchers */
+    /**
+     * SECURITY: The caller holds the file lock; missing PDFs or conflicting voucher pairs abort the restore transaction.
+     *
+     * @param  Collection<int, Voucher>  $vouchers
+     */
     public function restore(Collection $vouchers): int
     {
         $disk = Storage::disk('local');
@@ -65,6 +73,8 @@ class VoucherRecycleBin
     }
 
     /**
+     * SECURITY: The caller holds the file lock; PDF quarantine permits rollback before irreversible cleanup.
+     *
      * @param  Collection<int, Voucher>  $vouchers
      * @return array{purged: int, cleanup_failed: bool}
      */

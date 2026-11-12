@@ -1,3 +1,42 @@
+# Project change history
+
+## 2026-11-12 — Office readiness candidate
+
+- Added developer/source/workflow/database guidance, a machine-configuration catalogue, the readiness plan, full recovery evidence and a release-readiness record.
+- Created and verified a fresh protected backup and full disposable restore; retained and reconciled 35 obsolete OCR failure records without retry/deletion.
+- Added a staging-only native Apache configuration generator and an optional backup `-PhpPath`; documented verified candidate hashes and the endpoint-protection block. No native service cutover occurred.
+- Fixed stale GET `/logout` navigation with a safe redirect while retaining CSRF-protected POST sign-out. This maps the new `AuthController` SECURITY-FIX marker; added guest/authenticated/intended-destination regressions.
+- Isolated PHPUnit from the production configuration cache and guarded application creation before database-reset traits; removed Composer's preparatory production-cache clear. Added cached/inherited-configuration safety regressions.
+- Normalized the full-size upload harness's Apache configuration argument. An elevated run verified folder/per-file oversize rejection, then stopped at about 3.42 GB after the live response monitor timed out; finalization/full hashes remain unverified. Removed only the owned disposable fixture. A successful 5 GB transfer has not been claimed.
+- Cached the unchanged private production configuration to stabilize sign-in; verified matching key, office database and session settings. This ignored runtime file is not part of the source release.
+- Kept native security approval, live cutover/restart and final physical-device/full-size acceptance open. The user deferred second-PC testing to 2026-11-13.
+
+## 2026-11-12 — Application security audit
+
+Audit report: [docs/SECURITY_AUDIT.md](docs/SECURITY_AUDIT.md). Existing private deployment and administrator/staff permissions are preserved. No live database migration, credential reset, certificate/network changes, native runtime replacement, commit or push is part of this patch.
+
+### Security fixes (SECURITY-FIX marker map)
+
+- **SA-01:** `DatabaseSeeder` bootstraps only an empty installation, generates a random one-time temporary administrator password and requires a change. Existing accounts, including soft-deleted collisions, prevent bootstrap. Added seeder regression tests.
+- **SA-02:** `composer.lock` updates only `symfony/yaml` 7.4.21 to 7.4.23 for the reported development-tooling advisory. No manifest/dependency addition.
+- **SA-03/04:** `ProfileController` rejects reused passwords, rotates remember tokens, revokes other configured database sessions and destroys the prior current-session ID. `routes/web.php` applies authenticated-session hash checks. Added real two-browser/file-session and database-session regressions plus temporary-password coverage.
+- **SA-05/06/10:** `AddSecurityHeaders` sets private/no-store, a server-generated request ID with log context, and production same-origin CSP. Its local hot-server exception remains local-only. `resources/js/app.js` and account/voucher templates replace inline confirmation handlers with escaped data attributes and a shared external listener. Added header/cache/CSP/error/correlation and confirmation tests. Same-origin PDF objects and port-specific HSTS remain deliberate compatibility decisions.
+- **SA-07:** `Set up office access.ps1` constructs a fresh allowlisted backup ACL, protects setup archives before copying secrets, and validates backup paths/reparse points. Existing descendant ACL validation prevents unsafe history from being silently accepted; it does not recursively rewrite past backups. Added disposable ACL/path fixture tests. The elevated live setup was not run.
+- **SA-08:** `VoucherController` validates nested multipart file inputs on both upload paths and checks the legacy 5 GB aggregate limit before discarding a prior staged review. Added acceptance/rejection/preservation regressions; existing per-file/folder limits remain.
+- **SA-09:** `AuditSecurityEvents`, `ActivityRecorder`, `ActivityLog`, and middleware registration audit successful saved/recycled PDF GET/download deliveries (including Range requests) and authenticated authorization denials. Logs exclude credentials, request bodies and PDF bytes. Added actor/IP/range/head/guest/error/denial regressions and a positive administrator access test from a different device address.
+
+Every dated SECURITY-FIX marker maps to one of these items, including repeated CSP/development-exception markers and the backup ACL/path/descendant markers. Source markers use the actual audit date, 2026-11-12.
+
+### Review, documentation and verification support
+
+- Added SECURITY/TRUST-BOUNDARY rationale to account/auth controllers, user/gate/observer code, upload/file/recycle paths, OCR extraction/process/jobs, file locks, backup checksums and Windows rendering. These annotations explain existing controls rather than add permission restrictions.
+- Updated `.env.example` for SQLite, private session-cookie defaults and bounded daily informational file logging; the live private environment was not overwritten.
+- Added `SECURITY.md`, architecture, dependency inventory, setup/recovery guidance, and the complete audit report; replaced the framework-template README with application instructions.
+- Made `tests/office-https.test.ps1` use synthetic HTTP input and a standalone temporary Apache configuration, removing dependence on the running HTTPS virtual host. No service restart or certificate import occurs.
+- Retained preexisting unrelated UI, CI/readiness, Tailscale and cleanup work. Native Apache/PHP/OpenSSL replacement and audit retention/restore decisions remain documented manual work; the overall runtime risk is not declared resolved.
+
+The following release notes are inherited from the original Laravel application skeleton.
+
 # Release Notes
 
 ## [Unreleased](https://github.com/laravel/laravel/compare/v13.11.0...13.x)

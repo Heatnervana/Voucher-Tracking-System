@@ -16,6 +16,18 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    /**
+     * SECURITY-FIX: 2026-11-12 Recover stale sign-out navigation without allowing GET to end a session.
+     */
+    public function redirectLogout(Request $request): RedirectResponse
+    {
+        return redirect()->route($request->user() === null ? 'login' : 'vouchers.index');
+    }
+
+    /**
+     * SECURITY: Generic failures avoid username disclosure; account/IP limits bound guessing.
+     * TRUST-BOUNDARY: Successful authentication rotates the visitor's session identifier.
+     */
     public function store(Request $request): RedirectResponse
     {
         $credentials = $request->validate(['username' => ['required', 'string', 'max:255'], 'password' => ['required', 'string']]);
@@ -36,6 +48,9 @@ class AuthController extends Controller
         return redirect()->intended(route('vouchers.index'));
     }
 
+    /**
+     * SECURITY: Invalidate session state and its CSRF token when relinquishing access.
+     */
     public function destroy(Request $request): RedirectResponse
     {
         Auth::logout();

@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 class LockVoucherFiles
 {
     /**
-     * Handle an incoming request.
+     * SECURITY: Saved-file mutations and backups share this filesystem lock; lock failure must stop mutation.
      *
      * @param  Closure(Request): (Response)  $next
      */

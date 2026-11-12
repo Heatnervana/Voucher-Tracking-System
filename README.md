@@ -1,58 +1,66 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# PPA Voucher Tracker
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+An office voucher library built with Laravel 12, Blade, Vite and SQLite. Staff search and view the shared PDFs. Administrators manage uploads, folders, voucher details, accounts, the recycle bin and activity history. Local OCR suggests amounts; uncertain amounts remain available for manual completion inside the voucher view.
 
-## About Laravel
+The current deployment is private office hosting on a Windows PC, with optional private Tailscale HTTPS access. It is not a public internet deployment. Existing administrator access is not limited to one device by this application patch.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Fresh development installation
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Use the installed package versions and committed lockfiles. The package PHP requirement is `^8.2`; verify a maintained compatible runtime and its extensions. The audit used PHP 8.5.11 and Node 24 tooling. See [runtime differences and setup](docs/SETUP_AND_DEPLOYMENT.md) before operating the existing Windows server.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```powershell
+composer install --prefer-dist --no-interaction
+Copy-Item .env.example .env
+php artisan key:generate --no-interaction
+New-Item -ItemType File database/database.sqlite
+php artisan migrate --no-interaction
+npm ci
+npm run build
+php artisan db:seed --no-interaction
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Run these commands only for a new disposable installation. Keep the generated application key and private database safe. Never replace a live `.env`, recreate its database, or regenerate its key as an update procedure. The bootstrap seeder generates a one-time temporary administrator password only when no accounts exist; change it at first sign-in. Treat its console output as a credential. It skips existing installations without changing accounts.
 
-## Contributing
+```powershell
+php artisan serve --host=127.0.0.1 --port=8000
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+In a second terminal, start the amount worker when local OCR tools are configured:
 
-## Code of Conduct
+```powershell
+php artisan queue:work database --queue=voucher-ocr --tries=1 --timeout=60 --no-interaction
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+For frontend development, `npm run dev` starts Vite; the hot-server CSP exception is restricted to the local environment. Production uses `npm run build` and must not retain a stale `public/hot` file. Uploaded PDFs belong on the private local disk, never under `public/`.
 
-## Security Vulnerabilities
+## Tests and security checks
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Run tests in a disposable checkout. PHPUnit and browser fixtures isolate their records/storage; do not substitute production credentials or PDFs.
 
-## License
+```powershell
+$env:VOUCHER_OCR_SAMPLE=(Resolve-Path tests/Fixtures/amount-5250-scan.pdf).Path
+php vendor/bin/phpunit --colors=never
+php vendor/bin/pint --dirty --format agent
+node --test tests/voucher-forms.test.mjs tests/voucher-amounts.test.mjs
+npm run build
+composer audit --locked --format=json
+npm audit --json
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The optional OCR integration requires native PDF/OCR tools. Windows Edge browser tests use `node --test tests/browser-flows.mjs`; configure `BROWSER_TEST_PHP` and `BROWSER_TEST_EDGE` for the installed binaries. Windows configuration checks are in `tests/office-https.test.ps1`, `tests/tailscale-https.test.ps1`, and `tests/office-backup-security.test.ps1`. They test disposable configuration/fixtures rather than provision the live network. See setup documentation for details, parallel-request tests and the separate resource-intensive folder test.
+
+## Office operation and documentation
+
+Existing office task/startup/backup scripts are operating tools, not fresh-install defaults. Review their effective paths, account, network, ACL and TLS configuration before running an elevated setup. Updating application packages does not update Apache, PHP, OpenSSL or native OCR parsers. The security review identified an older native web stack that requires a separately staged maintenance upgrade.
+
+- [Security audit and remaining decisions](docs/SECURITY_AUDIT.md)
+- [Security policy and incident handling](SECURITY.md)
+- [Architecture and trust boundaries](docs/ARCHITECTURE.md)
+- [Current release readiness and remaining acceptance](docs/RELEASE_READINESS.md)
+- [Dependency inventory and advisory checks](docs/DEPENDENCIES.md)
+- [Setup, private deployment, backups and recovery](docs/SETUP_AND_DEPLOYMENT.md)
+- [Developer handoff, business rules and test selection](docs/DEVELOPER_GUIDE.md)
+- [Office configuration and machine portability catalog](docs/OFFICE_CONFIGURATION.md)
+- [Change history](CHANGELOG.md)
+
+Do not commit `.env`, credentials, private certificate keys, database files, vouchers, backups or runtime logs. Report suspected vulnerabilities privately as described in the security policy.

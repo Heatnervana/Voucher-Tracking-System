@@ -21,6 +21,50 @@ class Element extends EventTarget {
     scrollIntoView() {}
 }
 
+function confirmationSetup(accepted, dataset = { confirm: 'Delete this record?' }) {
+    const form = new Element({ dataset });
+    const messages = [];
+    vm.runInNewContext(source, {
+        document: { querySelectorAll: selector => selector === 'form[data-confirm]' ? [form] : [], querySelector: () => null },
+        window: { confirm: message => { messages.push(message); return accepted; } },
+        watchSavedVoucherAmounts() {},
+    });
+    return { form, messages };
+}
+
+test('declining a confirmation cancels submission without stopping other submit listeners', () => {
+    const { form, messages } = confirmationSetup(false);
+    let observedCancellation = false;
+    form.addEventListener('submit', event => { observedCancellation = event.defaultPrevented; });
+    const event = new Event('submit', { cancelable: true, bubbles: true });
+
+    form.dispatchEvent(event);
+
+    assert.deepEqual(messages, ['Delete this record?']);
+    assert.equal(event.defaultPrevented, true);
+    assert.equal(event.cancelBubble, false);
+    assert.equal(observedCancellation, true);
+});
+
+test('accepting a confirmation permits native submission', () => {
+    const { form, messages } = confirmationSetup(true);
+    const event = new Event('submit', { cancelable: true });
+
+    form.dispatchEvent(event);
+
+    assert.deepEqual(messages, ['Delete this record?']);
+    assert.equal(event.defaultPrevented, false);
+});
+
+test('saved voucher confirmation uses the current DV after a rename and keeps it as text', () => {
+    const { form, messages } = confirmationSetup(false, { confirm: 'Delete saved voucher?', dvNumber: 'original' });
+    form.dataset.dvNumber = "123'); alert('xss')";
+
+    form.dispatchEvent(new Event('submit', { cancelable: true }));
+
+    assert.deepEqual(messages, ["Move voucher DV 123'); alert('xss') and its saved PDF to the recycle bin?"]);
+});
+
 function filenameSetup(response) {
     const field = new Element({ value: 'Cancelled' });
     const status = new Element({ textContent: '' });

@@ -25,6 +25,9 @@ class AccountController extends Controller
         return view('accounts.create');
     }
 
+    /**
+     * TRUST-BOUNDARY: Derive privileges from the validated role after rechecking the administrator.
+     */
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
@@ -47,6 +50,9 @@ class AccountController extends Controller
         return view('accounts.edit', ['account' => $account]);
     }
 
+    /**
+     * SECURITY: Serialize administrator changes so concurrent demotions cannot remove the last one.
+     */
     public function update(Request $request, User $account): RedirectResponse
     {
         $data = $request->validate([
@@ -76,6 +82,9 @@ class AccountController extends Controller
         return redirect()->route('accounts.edit', $account)->with('status', 'Account updated. If the role changed, the employee must sign in again.');
     }
 
+    /**
+     * SECURITY: Temporary resets revoke existing sessions; self-service changes require the current password.
+     */
     public function resetPassword(Request $request, User $account): RedirectResponse
     {
         $data = $request->validate(['password' => ['required', 'confirmed', Password::min(12)->mixedCase()]]);
@@ -94,6 +103,9 @@ class AccountController extends Controller
         return redirect()->route('accounts.edit', $account)->with('status', 'Password reset. The employee must sign in with the temporary password and choose a new one.');
     }
 
+    /**
+     * SECURITY: Protect the active and last administrator while revoking the deleted account's access.
+     */
     public function destroy(Request $request, User $account): RedirectResponse
     {
         DB::transaction(function () use ($request, $account): void {
@@ -112,7 +124,11 @@ class AccountController extends Controller
         return redirect()->route('accounts.index')->with('status', 'Account deleted. Access has been removed; its saved PDFs and uploader history are preserved.');
     }
 
-    /** @return Collection<int, User> */
+    /**
+     * TRUST-BOUNDARY: Recheck persisted privileges under locks; the request's user may be stale.
+     *
+     * @return Collection<int, User>
+     */
     private function lockAdministrators(Request $request): Collection
     {
         $administrators = User::where('is_admin', true)->orderBy('id')->lockForUpdate()->get();
@@ -121,6 +137,9 @@ class AccountController extends Controller
         return $administrators;
     }
 
+    /**
+     * SECURITY: Role changes and resets must invalidate existing sessions and remembered credentials.
+     */
     private function invalidateSessions(User $account): void
     {
         $account->remember_token = Str::random(60);

@@ -26,10 +26,14 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
+/**
+ * SECURITY: Route middleware permits the authenticated shared library and gates management actions.
+ */
 class VoucherController extends Controller
 {
     private const MAX_FOLDER_BYTES = 5_000_000_000;
@@ -98,6 +102,9 @@ class VoucherController extends Controller
         return view('vouchers.upload', ['years' => VoucherYear::orderByDesc('year')->pluck('year')]);
     }
 
+    /**
+     * TRUST-BOUNDARY: Validated folder selection captures server-side fingerprints for replacement consent.
+     */
     public function startUpload(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -137,12 +144,17 @@ class VoucherController extends Controller
         return response()->json(['batch_id' => $batchId]);
     }
 
+    /**
+     * TRUST-BOUNDARY: Session batch membership and received-byte limits constrain untrusted multipart uploads.
+     */
     public function uploadChunk(Request $request, VoucherFilename $filename): JsonResponse
     {
         $data = $request->validate([
             'batch_id' => ['required', 'uuid'],
             'chunk_id' => ['required', 'uuid'],
             'files' => ['required', 'array', 'min:1', 'max:'.self::MAX_FILES_PER_CHUNK],
+            // SECURITY-FIX: 2026-11-12: reject nested uploads before file-size accounting.
+            'files.*' => ['required', 'file'],
             'file_labels' => ['sometimes', 'array', 'max:'.self::MAX_FILES_PER_CHUNK],
             'file_labels.*' => ['string', 'max:1024'],
             'expected_files' => ['sometimes', 'integer', 'min:1', 'max:'.self::MAX_FILES_PER_CHUNK],
@@ -199,6 +211,9 @@ class VoucherController extends Controller
         return response()->json($result);
     }
 
+    /**
+     * SECURITY: File-count reconciliation prevents incomplete transfers from silently entering review.
+     */
     public function completeUpload(Request $request): JsonResponse
     {
         $data = $request->validate(['batch_id' => ['required', 'uuid']]);
@@ -240,6 +255,9 @@ class VoucherController extends Controller
         return response()->json(['redirect' => route('vouchers.confirm')]);
     }
 
+    /**
+     * SECURITY: Only a UUID entry in the current session batch can supply a deletable staged path.
+     */
     public function removeStagedFile(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -273,12 +291,18 @@ class VoucherController extends Controller
 
     public function store(Request $request, VoucherFilename $filename): RedirectResponse
     {
-        $data = $request->validate(['year' => ['required', 'integer', 'exists:years,year'], 'type' => ['required', Rule::in(['ADA', 'CHECK'])], 'month' => ['required', 'integer', 'between:1,12'], 'files' => ['required', 'array', 'min:1', 'max:30']]);
+        $data = $request->validate(['year' => ['required', 'integer', 'exists:years,year'], 'type' => ['required', Rule::in(['ADA', 'CHECK'])], 'month' => ['required', 'integer', 'between:1,12'], 'files' => ['required', 'array', 'min:1', 'max:30'], 'files.*' => ['required', 'file']]);
+        // SECURITY-FIX: 2026-11-12: enforce the folder limit before clearing the previous review.
+        $files = $request->file('files', []);
+        $totalSize = array_sum(array_map(fn (UploadedFile $file): int => max(0, (int) $file->getSize()), $files));
+        if ($totalSize > self::MAX_FOLDER_BYTES) {
+            throw ValidationException::withMessages(['files' => 'Upload a folder no larger than 5 GB.']);
+        }
         $this->clearStagedUpload();
         $staged = [];
         $errors = [];
 
-        foreach ($request->file('files', []) as $file) {
+        foreach ($files as $file) {
             $result = $this->stageUploadedFile($file, $filename);
 
             if ($result['error'] !== null) {
@@ -308,6 +332,9 @@ class VoucherController extends Controller
             : redirect()->route('vouchers.create');
     }
 
+    /**
+     * TRUST-BOUNDARY: The caller selects session-owned UUIDs rather than supplying a filesystem path.
+     */
     public function preview(Request $request): StreamedResponse
     {
         $data = $request->validate([
@@ -355,6 +382,9 @@ class VoucherController extends Controller
         return redirect()->route('vouchers.index');
     }
 
+    /**
+     * SECURITY: Route authorization and the exclusive file lock precede validated, consent-bound replacement.
+     */
     public function finalize(Request $request): RedirectResponse
     {
         $upload = session('voucher_upload');
@@ -514,6 +544,9 @@ class VoucherController extends Controller
         return view('vouchers.show', ['voucher' => $voucher->load('uploader'), 'years' => VoucherYear::orderByDesc('year')->pluck('year')]);
     }
 
+    /**
+     * SECURITY: Authenticated shared-library access serves the bound record's server-managed private path.
+     */
     public function pdf(Voucher $voucher)
     {
         abort_unless(Storage::disk('local')->exists($voucher->file_path), 404);
@@ -521,6 +554,9 @@ class VoucherController extends Controller
         return Storage::disk('local')->response($voucher->file_path, basename($voucher->file_path), ['Content-Type' => 'application/pdf', 'Content-Disposition' => 'inline']);
     }
 
+    /**
+     * SECURITY: Management authorization comes from route middleware; saved records supply download paths.
+     */
     public function download(Voucher $voucher)
     {
         abort_unless(Storage::disk('local')->exists($voucher->file_path), 404);
@@ -528,6 +564,9 @@ class VoucherController extends Controller
         return Storage::disk('local')->download($voucher->file_path, basename($voucher->file_path), ['Content-Type' => 'application/pdf']);
     }
 
+    /**
+     * SECURITY: Validated manual amounts supersede pending OCR and must survive later background results.
+     */
     public function updateAmount(Request $request, Voucher $voucher): RedirectResponse
     {
         $data = $request->validate(['amount' => ['required', 'numeric', 'gt:0', 'max:9999999999999.99', 'decimal:0,2']]);
@@ -537,6 +576,9 @@ class VoucherController extends Controller
         return redirect()->route('vouchers.show', $voucher)->with('status', 'Amount saved.');
     }
 
+    /**
+     * TRUST-BOUNDARY: Filename validation rejects unsafe paths and Windows names while middleware serializes mutations.
+     */
     public function rename(Request $request, Voucher $voucher, VoucherFilename $parser): JsonResponse|RedirectResponse
     {
         $voucher->refresh();
@@ -628,6 +670,9 @@ class VoucherController extends Controller
         return redirect()->route('vouchers.show', $voucher)->with('status', 'Saved PDF filename updated.');
     }
 
+    /**
+     * SECURITY: Validated folders and existing basenames constrain moves while middleware holds the file lock.
+     */
     public function move(Request $request, Voucher $voucher): RedirectResponse
     {
         $voucher->refresh();
@@ -668,6 +713,9 @@ class VoucherController extends Controller
         return redirect()->route('vouchers.show', $voucher)->with('status', 'Voucher moved.');
     }
 
+    /**
+     * SECURITY: Route-gated soft deletion preserves PDF bytes and invalidates stale OCR through the recycle service.
+     */
     public function destroy(Voucher $voucher): RedirectResponse
     {
         try {
@@ -681,6 +729,9 @@ class VoucherController extends Controller
         return redirect()->route('vouchers.index')->with('status', 'Voucher and saved PDF moved to the recycle bin.');
     }
 
+    /**
+     * SECURITY: Bulk selection accepts at most twenty distinct active voucher IDs before deletion.
+     */
     public function destroySelected(Request $request): RedirectResponse
     {
         $data = $request->validate([
@@ -727,6 +778,9 @@ class VoucherController extends Controller
         );
     }
 
+    /**
+     * SECURITY: Callers supply route-validated folder or ID scopes while middleware holds the file lock.
+     */
     private function deleteVoucherScope($query, string $scope, array $filters): RedirectResponse
     {
         $vouchers = $query->get();
@@ -746,6 +800,9 @@ class VoucherController extends Controller
         return redirect()->route('vouchers.index', $filters)->with('status', $vouchers->count()." voucher(s) and PDF(s) moved to the recycle bin from {$scope}.");
     }
 
+    /**
+     * SECURITY: Snapshot hashes detect changes after replacement consent and do not grant authorization.
+     */
     private function voucherFingerprint(Voucher $voucher): string
     {
         return hash('sha256', json_encode($voucher->getAttributes(), JSON_THROW_ON_ERROR));
@@ -764,6 +821,8 @@ class VoucherController extends Controller
     }
 
     /**
+     * SECURITY: The caller holds the file lock; quarantine and rollback preserve both PDFs on persistence failure.
+     *
      * @param  array<string, mixed>  $attributes
      */
     private function saveStagedVoucher(FilesystemAdapter $disk, string $staged, string $destination, array $attributes, ?Voucher $existing): Voucher
@@ -822,6 +881,8 @@ class VoucherController extends Controller
     }
 
     /**
+     * SECURITY: Batch matching prevents stale review forms from mutating a newer staged upload.
+     *
      * @param  array<string, mixed>  $upload
      */
     private function assertUploadBatch(Request $request, array $upload): void
@@ -830,6 +891,9 @@ class VoucherController extends Controller
         abort_unless(hash_equals($upload['batch_id'] ?? '', $data['batch_id']), 409, 'This review belongs to an earlier upload. Open the current upload before continuing.');
     }
 
+    /**
+     * TRUST-BOUNDARY: Deletion paths come solely from server-generated entries in the locked upload session.
+     */
     private function clearStagedUpload(): void
     {
         foreach (session('voucher_upload.files', []) as $id => $file) {
@@ -843,6 +907,8 @@ class VoucherController extends Controller
     }
 
     /**
+     * TRUST-BOUNDARY: Untrusted uploads require PDF content, extension and size checks before receiving private UUID paths.
+     *
      * @return array{id: string|null, file: array<string, mixed>|null, size: int, error: string|null}
      */
     private function stageUploadedFile(UploadedFile $file, VoucherFilename $filename, ?string $displayName = null): array
@@ -908,6 +974,8 @@ class VoucherController extends Controller
     }
 
     /**
+     * SECURITY: OCR cache values are suggestions that finalize validates before saving amounts.
+     *
      * @param  array<string, mixed>  $upload
      * @return array<string, mixed>
      */

@@ -17,12 +17,18 @@ class ReadVoucherAmount implements ShouldQueue
 
     public int $timeout = 60;
 
+    /**
+     * TRUST-BOUNDARY: Only uploader-generated UUIDs should populate fileId; clients never supply a parser path.
+     */
     public function __construct(public string $fileId)
     {
-        // Keep OCR off the HTTP process even when the default queue is synchronous.
+        // SECURITY: Keep OCR off the HTTP process even when the default queue is synchronous.
         $this->onConnection('database')->onQueue('voucher-ocr');
     }
 
+    /**
+     * SECURITY: Rechecking cache and file existence prevents canceled uploads from publishing late OCR results.
+     */
     public function handle(PdfAmountReader $reader): void
     {
         $key = 'voucher-amount:'.$this->fileId;
