@@ -162,7 +162,8 @@ class BackupVouchersTest extends TestCase
         $this->prepareVoucher();
         unlink($this->fixtureRoot.'/.env');
 
-        $this->artisan('vouchers:backup', ['destination' => $this->fixtureRoot.'/backups'])->assertSuccessful();
+        $backupResult = Artisan::call('vouchers:backup', ['destination' => $this->fixtureRoot.'/backups']);
+        $this->assertSame(0, $backupResult, Artisan::output());
 
         $backup = $this->completeBackups()[0];
         $manifest = json_decode(file_get_contents($backup.'/manifest.json'), true, flags: JSON_THROW_ON_ERROR);

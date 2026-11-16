@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [8.3, 8.4, 8.5]
+        php: [8.2, 8.3, 8.4, 8.5]
 
     name: PHP ${{ matrix.php }}
 
@@ -38,6 +38,10 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
+      - name: Audit Composer dependencies
+        if: matrix.php == '8.5'
+        run: composer audit --locked --no-interaction
+
       - name: Set up Node.js
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
@@ -46,6 +50,14 @@ jobs:
 
       - name: Build frontend assets
         run: npm ci && npm run build
+
+      - name: Audit npm dependencies
+        if: matrix.php == '8.5'
+        run: npm audit --audit-level=low
+
+      - name: Run JavaScript unit tests
+        if: matrix.php == '8.5'
+        run: node --test tests/voucher-forms.test.mjs tests/voucher-amounts.test.mjs
 
       - name: Copy environment file
         run: cp .env.example .env
@@ -72,3 +84,26 @@ jobs:
           php tests/Browser/fixture.php prepare "$fixture" http://127.0.0.1:8765
           php tests/Browser/fixture.php seed-parallel "$fixture" 0
           npx playwright test
+
+  windows-configuration:
+    name: Windows configuration
+    runs-on: windows-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: powershell
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Test Tailscale HTTPS configuration
+        run: ./tests/tailscale-https.test.ps1
+
+      - name: Test office backup security
+        run: ./tests/office-backup-security.test.ps1
+
+      - name: Test office runtime configuration
+        run: ./tests/office-runtime.test.ps1
