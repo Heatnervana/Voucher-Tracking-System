@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\StagedVoucherUpload;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -51,11 +52,17 @@ class AuthController extends Controller
     /**
      * SECURITY: Invalidate session state and its CSRF token when relinquishing access.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request, StagedVoucherUpload $stagedUpload): RedirectResponse
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        try {
+            $stagedUpload->clear($request->session());
+        } catch (\Throwable $exception) {
+            report($exception);
+        } finally {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
 
         return redirect()->route('login');
     }

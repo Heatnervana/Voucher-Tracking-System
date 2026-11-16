@@ -144,6 +144,6 @@ class AccountController extends Controller
     {
         $account->remember_token = Str::random(60);
         $account->save();
-        DB::table('sessions')->where('user_id', $account->id)->delete();
+        DB::connection(config('session.connection'))->table(config('session.table'))->where('user_id', $account->id)->delete();
     }
 }

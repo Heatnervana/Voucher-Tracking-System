@@ -7,6 +7,7 @@ use App\Jobs\ReadSavedVoucherAmount;
 use App\Jobs\ReadVoucherAmount;
 use App\Models\Voucher;
 use App\Models\VoucherYear;
+use App\StagedVoucherUpload;
 use App\VoucherFilename;
 use App\VoucherRecycleBin;
 use Carbon\Carbon;
@@ -699,23 +700,60 @@ class VoucherController extends Controller
             return redirect()->route('vouchers.show', $voucher);
         }
 
+        $connection = $voucher->getConnection();
+        $transactionLevel = $connection->transactionLevel();
+        $moved = false;
+
         try {
-            DB::transaction(function () use ($disk, $oldPath, $target, $voucher, $data): void {
+            $connection->transaction(function () use ($disk, $oldPath, $target, $voucher, $data, &$moved): void {
                 $disk->makeDirectory(dirname($target));
 
                 if (! $disk->exists($oldPath) || $disk->exists($target) || ! $disk->move($oldPath, $target)) {
                     throw new \RuntimeException('The PDF could not be moved.');
                 }
+                $moved = true;
 
-                try {
-                    $voucher->update(['year' => $data['year'], 'type' => $data['type'], 'month' => $data['month'], 'file_path' => $target]);
-                } catch (\Throwable $exception) {
-                    $disk->move($target, $oldPath);
-                    throw $exception;
+                if (! $voucher->update(['year' => $data['year'], 'type' => $data['type'], 'month' => $data['month'], 'file_path' => $target])) {
+                    throw new \RuntimeException('The moved voucher could not be saved.');
                 }
             });
-        } catch (\Throwable) {
-            return back()->withErrors(['move' => 'The voucher could not be moved.']);
+        } catch (\Throwable $exception) {
+            report($exception);
+            $savedPath = null;
+            $error = 'The voucher could not be moved.';
+
+            if ($moved) {
+                try {
+                    // A failed PDO commit can leave a transaction open after Laravel resets its counter.
+                    if ($transactionLevel === 0 && $connection->getPdo()->inTransaction()) {
+                        $connection->getPdo()->rollBack();
+                    }
+                    $savedPath = $voucher->newQuery()->useWritePdo()->whereKey($voucher->id)->value('file_path');
+                } catch (\Throwable $recoveryException) {
+                    report($recoveryException);
+                }
+
+                try {
+                    if ($savedPath === $oldPath) {
+                        if ($disk->exists($oldPath) || ! $disk->move($target, $oldPath)) {
+                            throw new \RuntimeException('Could not restore the original PDF location.');
+                        }
+                    } elseif ($savedPath !== $target) {
+                        // Preserve both possible locations when the committed path cannot be verified.
+                        if (! $disk->exists($oldPath) && ! $disk->copy($target, $oldPath)) {
+                            throw new \RuntimeException('Could not preserve both possible PDF locations.');
+                        }
+                        $error = 'The move could not be confirmed. Please contact support before trying again.';
+                    }
+                } catch (\Throwable $recoveryException) {
+                    report(new \RuntimeException("Could not recover moved PDF from {$target} to {$oldPath}.", 0, $recoveryException));
+                    $error = 'The move could not be completed or restored. Please contact support before trying again.';
+                }
+            }
+
+            if ($savedPath !== $target) {
+                return back()->withErrors(['move' => $error]);
+            }
         }
 
         return redirect()->route('vouchers.show', $voucher)->with('status', 'Voucher moved.');
@@ -904,14 +942,9 @@ class VoucherController extends Controller
      */
     private function clearStagedUpload(): void
     {
-        foreach (session('voucher_upload.files', []) as $id => $file) {
-            Cache::forget('voucher-amount:'.$id);
-            if (isset($file['path'])) {
-                Storage::disk('local')->delete($file['path']);
-            }
+        if (! app(StagedVoucherUpload::class)->clear(session()->driver())) {
+            throw ValidationException::withMessages(['files' => 'Some staged PDFs could not be removed. Please try again.']);
         }
-
-        session()->forget('voucher_upload');
     }
 
     /**
