@@ -1,6 +1,15 @@
 import { watchVoucherAmounts } from './voucher-amounts';
 import { watchSavedVoucherAmounts } from './saved-voucher-amounts';
 
+// SECURITY-FIX: 2026-11-12 Keep confirmation code outside HTML so CSP can block inline scripts.
+document.querySelectorAll('form[data-confirm]').forEach(form => {
+    form.addEventListener('submit', event => {
+        const message = form.dataset.dvNumber === undefined ? form.dataset.confirm
+            : `Move voucher DV ${form.dataset.dvNumber} and its saved PDF to the recycle bin?`;
+        if (!window.confirm(message)) event.preventDefault();
+    });
+});
+
 function makeWarningDismissible(notice) {
     notice.classList.add('dismissible-notice');
     notice.setAttribute('role', 'alert');

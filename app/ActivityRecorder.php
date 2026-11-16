@@ -5,6 +5,7 @@ namespace App;
 use App\Models\ActivityLog;
 use App\Models\User;
 use App\Models\Voucher;
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
@@ -61,6 +62,26 @@ class ActivityRecorder
             'before' => [],
             'after' => [],
             'ip_address' => request()->ip(),
+        ]);
+    }
+
+    /**
+     * SECURITY-FIX: 2026-11-12 Keep attributable denial records without copying attacker input.
+     */
+    public function authorizationDenied(Request $request): ActivityLog
+    {
+        $actor = $request->user();
+
+        return ActivityLog::create([
+            'actor_id' => $actor->id,
+            'actor_label' => $this->userLabel($actor),
+            'subject_type' => 'route',
+            'subject_id' => null,
+            'subject_label' => $request->route()?->getName() ?? 'unnamed route',
+            'action' => 'authorization.denied',
+            'before' => [],
+            'after' => [],
+            'ip_address' => $request->ip(),
         ]);
     }
 

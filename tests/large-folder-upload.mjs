@@ -243,7 +243,7 @@ test('a real 5,000,000,000-byte folder uploads, stages and saves intact in Edge'
         assert.equal(expected.reduce((sum, file) => sum + file.size, 0), 5_000_000_000);
         execFileSync(php, ['tests/Browser/fixture.php', 'prepare', directory, origin], { cwd: project, env: environment, encoding: 'utf8' });
         const apachePath = path => path.replaceAll('\\', '/');
-        const apacheConfig = join(directory, 'httpd.conf');
+        const apacheConfig = apachePath(join(directory, 'httpd.conf'));
         await writeFile(apacheConfig, `ServerRoot "C:/xampp/apache"
 Listen 127.0.0.1:${port}
 ServerName 127.0.0.1

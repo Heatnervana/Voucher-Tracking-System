@@ -14,6 +14,9 @@ use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
+/**
+ * SECURITY: Every recycle-bin route requires management authorization, including retained-PDF previews.
+ */
 class RecycleBinController extends Controller
 {
     public function index(Request $request): View
@@ -24,6 +27,9 @@ class RecycleBinController extends Controller
             ->orderByDesc('deleted_at')->paginate(20)->withQueryString(), 'filters' => $filters]);
     }
 
+    /**
+     * TRUST-BOUNDARY: A refreshed trashed record supplies the private PDF path instead of a request filename.
+     */
     public function preview(Voucher $voucher): StreamedResponse
     {
         $voucher->refresh();
@@ -58,7 +64,11 @@ class RecycleBinController extends Controller
         return $this->purgeVouchers($this->selected($request), $recycle);
     }
 
-    /** @return Collection<int, Voucher> */
+    /**
+     * SECURITY: Capped, distinct IDs must resolve to trashed records before bulk restore or permanent deletion.
+     *
+     * @return Collection<int, Voucher>
+     */
     private function selected(Request $request): Collection
     {
         $data = $request->validate(['voucher_ids' => ['required', 'array', 'min:1', 'max:20'],
@@ -67,7 +77,11 @@ class RecycleBinController extends Controller
         return Voucher::onlyTrashed()->whereIn('id', $data['voucher_ids'])->get();
     }
 
-    /** @param Collection<int, Voucher> $vouchers */
+    /**
+     * SECURITY: Route middleware holds the file lock while the recycle service restores validated records.
+     *
+     * @param  Collection<int, Voucher>  $vouchers
+     */
     private function restoreVouchers(Collection $vouchers, VoucherRecycleBin $recycle): RedirectResponse
     {
         try {
@@ -81,7 +95,11 @@ class RecycleBinController extends Controller
         return redirect()->route('recycle-bin.index')->with('status', $count.' PDF(s) restored to the voucher library.');
     }
 
-    /** @param Collection<int, Voucher> $vouchers */
+    /**
+     * SECURITY: Route middleware holds the file lock while permanent deletion preserves rollback safety.
+     *
+     * @param  Collection<int, Voucher>  $vouchers
+     */
     private function purgeVouchers(Collection $vouchers, VoucherRecycleBin $recycle): RedirectResponse
     {
         try {

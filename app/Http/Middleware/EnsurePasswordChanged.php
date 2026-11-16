@@ -9,7 +9,8 @@ use Symfony\Component\HttpFoundation\Response;
 class EnsurePasswordChanged
 {
     /**
-     * Handle an incoming request.
+     * TRUST-BOUNDARY: A valid login with a temporary password cannot access the library yet.
+     * SECURITY: Profile and logout routes remain available to complete the required password change.
      *
      * @param  Closure(Request): (Response)  $next
      */

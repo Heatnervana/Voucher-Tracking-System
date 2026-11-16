@@ -19,15 +19,8 @@ use Illuminate\View\View as BladeView;
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-        //
-    }
-
-    /**
-     * Bootstrap any application services.
+     * TRUST-BOUNDARY: Server-side administrator gates protect management actions.
+     * SECURITY: Staff and administrators intentionally share the authenticated PDF library.
      */
     public function boot(): void
     {

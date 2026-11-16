@@ -28,6 +28,31 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_an_old_logout_address_returns_a_guest_to_sign_in(): void
+    {
+        $this->get('/logout')->assertRedirect(route('login'));
+        $this->assertGuest();
+    }
+
+    public function test_opening_a_logout_address_does_not_sign_out_an_authenticated_user(): void
+    {
+        $user = $this->account();
+        $this->actingAs($user)->get('/logout')->assertRedirect(route('vouchers.index'));
+        $this->assertAuthenticatedAs($user);
+        $this->post('/logout')->assertRedirect(route('login'));
+        $this->assertGuest();
+    }
+
+    public function test_sign_in_recovers_from_an_old_logout_intended_destination(): void
+    {
+        $user = $this->account();
+        $this->withSession(['url.intended' => url('/logout')])
+            ->post('/login', ['username' => $user->username, 'password' => 'CurrentPass123'])
+            ->assertRedirect(url('/logout'));
+        $this->get('/logout')->assertRedirect(route('vouchers.index'));
+        $this->assertAuthenticatedAs($user);
+    }
+
     public function test_repeated_failed_logins_are_rate_limited(): void
     {
         $user = $this->account();
@@ -56,6 +81,19 @@ class AuthenticationTest extends TestCase
         $this->actingAs($user)->put(route('profile.update'), ['current_password' => 'wrong', 'password' => 'UpdatedPass123', 'password_confirmation' => 'UpdatedPass123'])
             ->assertSessionHasErrors('current_password');
         $this->assertTrue(Hash::check('CurrentPass123', $user->fresh()->password));
+    }
+
+    public function test_temporary_password_cannot_be_reused_to_remove_the_required_change(): void
+    {
+        $user = $this->account(true);
+        $this->actingAs($user)->put(route('profile.update'), [
+            'current_password' => 'CurrentPass123',
+            'password' => 'CurrentPass123',
+            'password_confirmation' => 'CurrentPass123',
+        ])->assertSessionHasErrors('password');
+
+        $this->assertTrue($user->fresh()->must_change_password);
+        $this->get(route('vouchers.index'))->assertRedirect(route('profile.edit'));
     }
 
     public function test_mismatched_confirmation_cannot_change_the_password(): void

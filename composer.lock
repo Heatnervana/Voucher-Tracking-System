@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "db52f8bcf21414a3366fe4c34d595d61",
+    "content-hash": "250eea15f67529a23dd1111cd46968c9",
     "packages": [
         {
             "name": "brick/math",
@@ -1063,16 +1063,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v12.70.1",
+            "version": "v12.72.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "e09fc54263d1a56cfe1709958fcbb22a4159b1e3"
+                "reference": "b089d3020e508f49b3625726ab4a2c897f1b78d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/e09fc54263d1a56cfe1709958fcbb22a4159b1e3",
-                "reference": "e09fc54263d1a56cfe1709958fcbb22a4159b1e3",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/b089d3020e508f49b3625726ab4a2c897f1b78d5",
+                "reference": "b089d3020e508f49b3625726ab4a2c897f1b78d5",
                 "shasum": ""
             },
             "require": {
@@ -1281,7 +1281,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2026-10-21T12:55:36+00:00"
+            "time": "2026-11-10T15:45:11+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -8572,16 +8572,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v7.4.21",
+            "version": "v7.4.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "044907929c7999814378be22da34722c7a86bad4"
+                "reference": "1e601207ffe627a2e621faa9d661f1d32dcf1cec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/044907929c7999814378be22da34722c7a86bad4",
-                "reference": "044907929c7999814378be22da34722c7a86bad4",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/1e601207ffe627a2e621faa9d661f1d32dcf1cec",
+                "reference": "1e601207ffe627a2e621faa9d661f1d32dcf1cec",
                 "shasum": ""
             },
             "require": {
@@ -8624,7 +8624,7 @@
             "description": "Loads and dumps YAML files",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/yaml/tree/v7.4.21"
+                "source": "https://github.com/symfony/yaml/tree/v7.4.23"
             },
             "funding": [
                 {
@@ -8644,7 +8644,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-12T12:34:30+00:00"
+            "time": "2026-11-04T08:27:22+00:00"
         },
         {
             "name": "theseer/tokenizer",

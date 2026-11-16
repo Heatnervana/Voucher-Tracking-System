@@ -70,5 +70,5 @@
         <noscript><p class="notice error">Enable JavaScript in your browser to review and save these vouchers.</p></noscript>
     </form>
 </section>
-<form id="cancel-upload" method="POST" action="{{ route('vouchers.cancel-upload') }}" onsubmit="return confirm('Remove all PDFs from this unsaved folder upload?');">@csrf @method('DELETE')<input type="hidden" name="batch_id" value="{{ $upload['batch_id'] }}"></form>
+<form id="cancel-upload" method="POST" action="{{ route('vouchers.cancel-upload') }}" data-confirm="Remove all PDFs from this unsaved folder upload?">@csrf @method('DELETE')<input type="hidden" name="batch_id" value="{{ $upload['batch_id'] }}"></form>
 @endsection

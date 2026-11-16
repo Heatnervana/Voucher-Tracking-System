@@ -15,7 +15,8 @@ class UserActivityObserver
     }
 
     /**
-     * Handle the User "updated" event.
+     * SECURITY: Audit password changes without including credentials, hashes, or session tokens.
+     * TRUST-BOUNDARY: Record only approved account fields rather than arbitrary changed attributes.
      */
     public function updated(User $user): void
     {

@@ -15,6 +15,9 @@ class PdfAmountReader
         private ExecutableFinder $executables,
     ) {}
 
+    /**
+     * TRUST-BOUNDARY: Callers supply private server-owned paths; first-page parser failures leave manual entry available.
+     */
     public function read(string $pdfPath): ?string
     {
         if (! is_file($pdfPath) || filesize($pdfPath) === 0) {
@@ -71,6 +74,9 @@ class PdfAmountReader
         }
     }
 
+    /**
+     * SECURITY: Argument arrays avoid shell interpolation and timeouts bound each native parser invocation.
+     */
     private function run(array $command, int $timeout): ?string
     {
         try {
@@ -82,6 +88,9 @@ class PdfAmountReader
         }
     }
 
+    /**
+     * SECURITY: Parser-generated XML is still untrusted; network access is disabled and entity substitution is not enabled.
+     */
     private function textWords(string $xml): array
     {
         $document = new DOMDocument;
@@ -112,6 +121,9 @@ class PdfAmountReader
         return $words;
     }
 
+    /**
+     * TRUST-BOUNDARY: Only first-page word rows enter detection; OCR text remains an untrusted amount suggestion.
+     */
     private function ocrWords(string $tsv): array
     {
         $words = [];

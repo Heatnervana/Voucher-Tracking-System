@@ -4,8 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sign in · PPA Voucher Tracker</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/ppa-logo.png') }}">
-    <link rel="icon" type="image/svg+xml" sizes="any" href="{{ asset('images/ppa-tab-icon.svg') }}">
+    <link rel="icon" type="image/x-icon" sizes="16x16 32x32 48x48 64x64" href="{{ asset('favicon.ico') }}?v=8a2a494d95a5">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="login-page">

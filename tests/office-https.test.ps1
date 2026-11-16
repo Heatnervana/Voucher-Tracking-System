@@ -15,7 +15,13 @@ try {
     $certificate = Join-Path $fixture 'leaf.pem'
     $key = Join-Path $fixture 'leaf.key'
     Invoke-OfficeOpenSsl -Arguments @('req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-sha256', '-days', '1', '-config', 'C:\xampp\apache\conf\openssl.cnf', '-subj', '/CN=HTTPS test fixture', '-keyout', $key, '-out', $certificate)
-    $original = [IO.File]::ReadAllText('C:\xampp\apache\conf\extra\httpd-vhosts.conf')
+    # SECURITY-FIX: 2026-11-12: synthetic input keeps an already configured server from invalidating the test.
+    $original = @'
+Listen 127.0.0.1:8080
+<VirtualHost *:8080>
+    ServerName localhost
+</VirtualHost>
+'@
     $rendered = New-OfficeHttpsConfiguration -Original $original -HostName 'pmo-moz-asststa' -Addresses @('192.168.1.30', '100.99.218.62') -Certificate $certificate -Key $key
     Assert-True ($rendered -match 'Listen 0\.0\.0\.0:8443 https') 'Dedicated HTTPS listener missing.'
     Assert-True ($rendered -match 'SSLProtocol -all \+TLSv1.2 \+TLSv1.3') 'Old TLS protocols are not disabled.'
@@ -51,7 +57,24 @@ try {
     Assert-True $failed 'Unexpected existing configuration must fail closed.'
     $vhosts = Join-Path $fixture 'vhosts.conf'
     [IO.File]::WriteAllText($vhosts, $rendered)
-    & 'C:\xampp\apache\bin\httpd.exe' -t -c ('Include "' + $vhosts.Replace('\', '/') + '"')
+    # SECURITY: A standalone parser fixture loads no live vhosts, private keys or configuration includes.
+    New-Item -ItemType Directory -Path (Join-Path $fixture 'logs') | Out-Null
+    $configuration = Join-Path $fixture 'httpd.conf'
+    $apacheFixture = @"
+ServerRoot "$($fixture.Replace('\', '/'))"
+ServerName localhost
+LoadModule authz_core_module "C:/xampp/apache/modules/mod_authz_core.so"
+LoadModule authz_host_module "C:/xampp/apache/modules/mod_authz_host.so"
+LoadModule dir_module "C:/xampp/apache/modules/mod_dir.so"
+LoadModule log_config_module "C:/xampp/apache/modules/mod_log_config.so"
+LoadModule rewrite_module "C:/xampp/apache/modules/mod_rewrite.so"
+LoadModule ssl_module "C:/xampp/apache/modules/mod_ssl.so"
+ErrorLog "logs/parser-error.log"
+LogFormat "%h %l %u %t \"%r\" %>s %b" common
+Include "$($vhosts.Replace('\', '/'))"
+"@
+    [IO.File]::WriteAllText($configuration, $apacheFixture)
+    & 'C:\xampp\apache\bin\httpd.exe' -t -d $fixture.Replace('\', '/') -f $configuration.Replace('\', '/')
     Assert-True ($LASTEXITCODE -eq 0) 'Generated configuration failed the installed Apache parser.'
     $template = [IO.File]::ReadAllText((Join-Path $root 'Install office certificate.ps1'))
     Assert-True ($template -match 'Cert:\\CurrentUser\\Root') 'Client trust must be scoped to the signed-in user.'

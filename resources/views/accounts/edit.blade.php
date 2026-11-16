@@ -21,7 +21,7 @@
         </form>
     </section>
     <section class="form-card"><h2>Delete account</h2><p class="muted">Remove this person's sign-in access. Their uploaded PDFs and uploader history will be kept.</p>
-        <form method="POST" action="{{ route('accounts.destroy', $account) }}" onsubmit="return confirm('Delete this account? The person will lose access. Their saved PDFs will be kept.');">@csrf @method('DELETE')<button class="button danger" type="submit">Delete account</button></form>
+        <form method="POST" action="{{ route('accounts.destroy', $account) }}" data-confirm="Delete this account? The person will lose access. Their saved PDFs will be kept.">@csrf @method('DELETE')<button class="button danger" type="submit">Delete account</button></form>
     </section>
 @endif
 @endsection

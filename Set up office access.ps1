@@ -4,6 +4,56 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+
+# SECURITY-FIX: 2026-11-12 replace broad explicit grants with an allowlisted backup ACL.
+function New-OfficeBackupAcl([Security.Principal.SecurityIdentifier]$AccountSid) {
+    $acl = New-Object Security.AccessControl.DirectorySecurity
+    $acl.SetAccessRuleProtection($true, $false)
+    $acl.SetOwner((New-Object Security.Principal.SecurityIdentifier('S-1-5-32-544')))
+    foreach ($identity in @($AccountSid, (New-Object Security.Principal.SecurityIdentifier('S-1-5-18')), (New-Object Security.Principal.SecurityIdentifier('S-1-5-32-544')))) {
+        $acl.AddAccessRule((New-Object Security.AccessControl.FileSystemAccessRule($identity, 'FullControl', 'ContainerInherit,ObjectInherit', 'None', 'Allow')))
+    }
+    return $acl
+}
+
+# SECURITY-FIX: 2026-11-12 validate every existing ancestor before creating files or changing ACLs.
+function Assert-OfficeBackupDestination([string]$Path, [Security.Principal.SecurityIdentifier]$AccountSid) {
+    $resolved = [IO.Path]::GetFullPath($Path)
+    $current = $resolved
+    while ($current) {
+        if (Test-Path -LiteralPath $current) {
+            $item = Get-Item -LiteralPath $current -Force
+            if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'Backup directories must not contain a junction or symbolic link.' }
+            if (-not $item.PSIsContainer) { throw 'Backup destination ancestors must be directories.' }
+        }
+        $parent = Split-Path $current -Parent
+        if ($parent -eq $current) { break }
+        $current = $parent
+    }
+    # SECURITY-FIX: 2026-11-12 reject unsafe historical ACLs instead of recursively changing backup permissions.
+    if ($null -ne $AccountSid -and (Test-Path -LiteralPath $resolved)) {
+        $allowed = @($AccountSid.Value, 'S-1-5-18', 'S-1-5-32-544')
+        $boundary = $resolved.TrimEnd('\') + '\'
+        $pending = New-Object 'System.Collections.Generic.Stack[string]'
+        $pending.Push($resolved)
+        while ($pending.Count) {
+            foreach ($child in @(Get-ChildItem -LiteralPath $pending.Pop() -Force -ErrorAction Stop)) {
+                $childPath = [IO.Path]::GetFullPath($child.FullName)
+                if (-not $childPath.StartsWith($boundary, [StringComparison]::OrdinalIgnoreCase)) { throw 'A backup entry is outside its destination boundary.' }
+                if ($child.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'Backup contents must not contain a junction or symbolic link.' }
+                $childAcl = Get-Acl -LiteralPath $childPath -ErrorAction Stop
+                $rules = @($childAcl.GetAccessRules($true, $true, [Security.Principal.SecurityIdentifier]))
+                if ($rules.Count -eq 0 -or $childAcl.GetOwner([Security.Principal.SecurityIdentifier]).Value -notin $allowed -or
+                    @($rules | Where-Object { $_.IdentityReference.Value -notin $allowed -or $_.AccessControlType -ne 'Allow' }).Count) {
+                    throw 'Existing backup contents have unsafe permissions. Review them manually and use a new empty protected destination.'
+                }
+                if ($child.PSIsContainer) { $pending.Push($childPath) }
+            }
+        }
+    }
+    return $resolved
+}
+
 $root = $PSScriptRoot
 $apache = 'C:\xampp\apache\bin\httpd.exe'
 $account = "$env:COMPUTERNAME\Stat"
@@ -11,7 +61,9 @@ $interface = 'Wi-Fi 2'
 $subnet = '192.168.1.0/24'
 $taskNames = @('Voucher Tracker - Apache', 'Voucher Tracker - Amount reader', 'Voucher Tracker - Backup')
 $configPaths = @('C:\xampp\apache\conf\httpd.conf', 'C:\xampp\apache\conf\extra\httpd-vhosts.conf', 'C:\xampp\apache\conf\extra\httpd-ssl.conf')
-$archive = Join-Path $root ('.project-backups\office-setup-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
+$accountSid = (New-Object Security.Principal.NTAccount($account)).Translate([Security.Principal.SecurityIdentifier])
+$BackupDestination = Assert-OfficeBackupDestination -Path $BackupDestination -AccountSid $accountSid
+$archive = Assert-OfficeBackupDestination -Path (Join-Path $root ('.project-backups\office-setup-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))) -AccountSid $accountSid
 $changedConfiguration = $false
 $changedTasks = @()
 $disabledRules = @()
@@ -19,6 +71,7 @@ $replacedOfficeRule = $false
 $createdPublicRule = $false
 $stoppedProcesses = $false
 New-Item -ItemType Directory -Path $archive | Out-Null
+Set-Acl -LiteralPath $archive -AclObject (New-OfficeBackupAcl -AccountSid $accountSid)
 Start-Transcript -Path (Join-Path $archive 'setup.log') | Out-Null
 
 try {
@@ -108,15 +161,11 @@ try {
         $createdPublicRule = $true
     }
 
+    $BackupDestination = Assert-OfficeBackupDestination -Path $BackupDestination -AccountSid $accountSid
     if (-not (Test-Path -LiteralPath $BackupDestination)) { New-Item -ItemType Directory -Path $BackupDestination | Out-Null }
     $backupAcl = Get-Acl -LiteralPath $BackupDestination
     $backupAcl | Export-Clixml -LiteralPath (Join-Path $archive 'previous-backup-acl.xml')
-    $backupAcl.SetAccessRuleProtection($true, $false)
-    foreach ($identity in @($account, 'SYSTEM', 'BUILTIN\Administrators')) {
-        $rule = New-Object Security.AccessControl.FileSystemAccessRule($identity, 'FullControl', 'ContainerInherit,ObjectInherit', 'None', 'Allow')
-        $backupAcl.AddAccessRule($rule)
-    }
-    Set-Acl -LiteralPath $BackupDestination -AclObject $backupAcl
+    Set-Acl -LiteralPath $BackupDestination -AclObject (New-OfficeBackupAcl -AccountSid $accountSid)
 
     $principal = New-ScheduledTaskPrincipal -UserId $account -LogonType S4U -RunLevel Limited
     $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit ([TimeSpan]::Zero) -MultipleInstances IgnoreNew -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)

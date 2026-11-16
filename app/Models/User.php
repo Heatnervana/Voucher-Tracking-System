@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -12,12 +11,14 @@ class User extends Authenticatable
     use HasFactory;
     use SoftDeletes;
 
+    /** TRUST-BOUNDARY: Privileges and mandatory password changes require explicit server assignment. */
     protected $fillable = ['username', 'name', 'password'];
 
+    /** SECURITY: Exclude password hashes and remember tokens from serialized account data. */
     protected $hidden = ['password', 'remember_token'];
 
     /**
-     * Get the attributes that should be cast.
+     * SECURITY: Hash credentials at assignment and compare role flags as booleans.
      *
      * @return array<string, string>
      */

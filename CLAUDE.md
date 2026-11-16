@@ -5,7 +5,7 @@
 
 ## Foundational Context
 
-This application is a Laravel application running on PHP 8.5. Always use the APIs that match the installed major version of each package — do not assume a version.
+This Laravel application requires PHP `^8.2`; Composer models PHP 8.2.12 for dependency resolution. Keep application code compatible with PHP 8.2, and verify the CLI, web, and worker runtimes separately. Always use the APIs that match the installed major version of each package — do not assume a version.
 
 Before relying on a package's API, confirm its installed version:
 - PHP packages: run `composer show --direct` to list direct dependencies with versions, or `composer show <vendor/package>` for a single package.

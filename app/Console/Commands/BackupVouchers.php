@@ -15,6 +15,9 @@ class BackupVouchers extends Command
 
     protected $description = 'Back up the SQLite database, saved voucher PDFs, and recovery environment';
 
+    /**
+     * TRUST-BOUNDARY: The operator must choose an OS-protected destination because backups include the recovery environment.
+     */
     public function handle(): int
     {
         $lock = @fopen(storage_path('framework/voucher-files.lock'), 'c');
@@ -133,6 +136,9 @@ class BackupVouchers extends Command
         }
     }
 
+    /**
+     * SECURITY: New directories use POSIX mode 0700; Windows privacy depends on provisioned filesystem ACLs.
+     */
     private function makeDirectory(string $path): void
     {
         if (! is_dir($path) && ! @mkdir($path, 0700, true) && ! is_dir($path)) {
@@ -140,6 +146,9 @@ class BackupVouchers extends Command
         }
     }
 
+    /**
+     * SECURITY: Separator and platform-case normalization retain a component boundary to reject sibling-prefix paths.
+     */
     private function isWithin(string $path, string $root): bool
     {
         $path = rtrim(str_replace('\\', '/', $path), '/');
@@ -152,6 +161,9 @@ class BackupVouchers extends Command
         return $path === $root || str_starts_with($path, $root.'/');
     }
 
+    /**
+     * SECURITY: Hash failures abort backup publication rather than accepting unverified content.
+     */
     private function checksum(string $path): string
     {
         $hash = @hash_file('sha256', $path);
@@ -162,6 +174,9 @@ class BackupVouchers extends Command
         return $hash;
     }
 
+    /**
+     * SECURITY: Exclusive destination creation and before/after hashes reject overwrites and changing source bytes.
+     */
     private function verifiedCopy(string $source, string $destination): string
     {
         $expectedHash = $this->checksum($source);

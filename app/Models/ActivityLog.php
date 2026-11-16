@@ -10,6 +10,9 @@ class ActivityLog extends Model
     public const UPDATED_AT = null;
 
     public const ACTIONS = [
+        'voucher.viewed' => 'PDF viewed',
+        'voucher.downloaded' => 'PDF downloaded',
+        'authorization.denied' => 'Access denied',
         'voucher.uploaded' => 'PDF uploaded',
         'voucher.replaced' => 'PDF replaced',
         'voucher.renamed' => 'PDF renamed',
