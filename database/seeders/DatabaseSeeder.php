@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 
 class DatabaseSeeder extends Seeder
 {
@@ -32,7 +33,7 @@ class DatabaseSeeder extends Seeder
         ]);
         $administrator->forceFill(['is_admin' => true, 'must_change_password' => true])->save();
         $this->command?->line('Username: '.$administrator->username);
-        $this->command?->line('Temporary password: '.$password);
+        $this->command?->line('Temporary password: '.OutputFormatter::escape($password));
         $this->command?->warn('Change this temporary password at first sign-in. It will not be displayed again.');
     }
 }

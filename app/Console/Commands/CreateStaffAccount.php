@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 
 class CreateStaffAccount extends Command
 {
@@ -42,7 +43,7 @@ class CreateStaffAccount extends Command
         $staff = new User($validation->validated() + ['password' => $password]);
         $staff->forceFill(['is_admin' => false, 'must_change_password' => true])->save();
         $this->line('Username: '.$staff->username);
-        $this->line('Temporary password: '.$password);
+        $this->line('Temporary password: '.OutputFormatter::escape($password));
         $this->info('Staff must change this password at first sign-in.');
 
         return self::SUCCESS;
