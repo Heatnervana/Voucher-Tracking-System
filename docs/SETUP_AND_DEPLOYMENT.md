@@ -1,6 +1,6 @@
 # Setup, office deployment, and recovery
 
-Reviewed: 2026-11-12. Examples use placeholder names such as `office.example.test` and `app.example.test`; substitute values from the approved office configuration. These instructions preserve the private office/Tailscale topology. They do not authorize deployment changes or create a device-specific administrator policy.
+Setup instructions updated: 2026-11-16. Native deployment observations below are from 2026-11-12. Examples use placeholder names such as `office.example.test` and `app.example.test`; substitute values from the approved office configuration. These instructions preserve the private office/Tailscale topology. They do not authorize deployment changes or create a device-specific administrator policy.
 
 ## Prerequisites and runtime checks
 
@@ -13,36 +13,24 @@ node --version
 npm --version
 ```
 
-The review observed Laravel 12.70.1, PHP 8.5.11 on the CLI, and a separate XAMPP PHP 8.2.12 used by Apache and the amount worker. Apache reported 2.4.58 and OpenSSL 3.1.3. Composer currently models PHP 8.2.12 through `config.platform.php`; a successful install under a newer CLI does not prove that the web runtime has every required extension. Verify the Apache PHP configuration and worker executable as well. Do not expose `phpinfo()` through a public diagnostic route.
+The 2026-11-16 cleanup verified Laravel 12.72.0 with PHP 8.2.12. The earlier 2026-11-12 review observed Laravel 12.70.1, PHP 8.5.11 on the CLI, and a separate XAMPP PHP 8.2.12 used by Apache and the amount worker. Apache reported 2.4.58 and OpenSSL 3.1.3. Composer models PHP 8.2.12 through `config.platform.php`; a successful install under a newer CLI does not prove that the web runtime has every required extension. Verify the Apache PHP configuration and worker executable as well. Do not expose `phpinfo()` through a public diagnostic route.
 
-Install the extensions required by Composer and the application, including SQLite/PDO SQLite, mbstring, DOM/XML, and file handling support. CI uses Node 24 and tests PHP 8.3, 8.4, and 8.5. Native PDF parsing/OCR needs Poppler (`pdftotext`, `pdftoppm`) and Tesseract where available; Windows can render a PDF page through the supplied PowerShell fallback. Missing tools leave amounts for manual entry. Review native version support and replacement in a separate maintenance window.
+Install the extensions required by Composer and the application, including SQLite/PDO SQLite, mbstring, DOM/XML, and file handling support. CI uses Node 24 and tests PHP 8.2, 8.3, 8.4, and 8.5. Native PDF parsing/OCR needs Poppler (`pdftotext`, `pdftoppm`) and Tesseract where available; Windows can render a PDF page through the supplied PowerShell fallback. Missing tools leave amounts for manual entry. Review native version support and replacement in a separate maintenance window.
 
 ## Fresh local installation
 
 Use a new checkout with no existing database, environment, or recovery material. Run these commands from its project directory:
 
 ```powershell
-composer install --no-interaction --prefer-dist
-npm ci
-if (Test-Path -LiteralPath '.env') { throw 'Review the existing environment before continuing.' }
-Copy-Item -LiteralPath '.env.example' -Destination '.env'
-```
-
-Configure `.env` for a disposable local installation. Use `DB_CONNECTION=sqlite` and a SQLite file inside that checkout's `database/` directory; set `DB_DATABASE` to its absolute path if necessary. Keep `APP_ENV=local`, `APP_DEBUG=false`, `LOG_LEVEL=info`, `SESSION_DRIVER=database`, `CACHE_STORE=database`, `QUEUE_CONNECTION=database`, and `FILESYSTEM_DISK=local`. `SESSION_DOMAIN=null` keeps cookies host-scoped. A nullable `SESSION_SECURE_COOKIE` lets the framework mark cookies secure on HTTPS; HTTP local development must not force a secure-only cookie.
-
-Create the empty SQLite file only if it does not exist, then initialize the new installation:
-
-```powershell
-if (!(Test-Path -LiteralPath 'database/database.sqlite')) {
-    New-Item -ItemType File -Path 'database/database.sqlite' | Out-Null
-}
-php artisan key:generate --no-interaction
-php artisan migrate --no-interaction
+composer run setup
 php artisan db:seed --no-interaction
-npm run build
 ```
 
-Generate `APP_KEY` only for a fresh installation. Preserve the existing key on an update or restore. Do not run the general `composer setup` shortcut against an existing installation: its key-generation step can replace recovery-critical configuration.
+The setup guard runs before dependency installation, key generation, and migrations. It refuses an existing `.env`, `bootstrap/cache/config.php`, or nonempty `database/database.sqlite`. It also refuses nonempty inherited `APP_KEY`, `APP_ENV`, `DB_CONNECTION`, `DB_DATABASE`, `DB_URL`, `LARAVEL_STORAGE_PATH`, `APP_CONFIG_CACHE`, `APP_PACKAGES_CACHE`, `APP_SERVICES_CACHE`, `APP_EVENTS_CACHE`, and `APP_ROUTES_CACHE` values without printing them. These cache overrides can redirect Composer cleanup and Laravel cache reads or writes. Use a fresh development terminal without those overrides. Do not delete existing installation files to bypass the guard; follow the update procedure below. If setup stops after creating `.env`, resolve the failed step and resume that step manually, preserving any key already generated.
+
+After the guard passes, setup installs the locked dependencies, copies `.env.example`, creates SQLite if absent, generates the initial key, runs migrations, and builds the frontend. The example uses `DB_CONNECTION=sqlite` and `database/database.sqlite` inside the checkout, with `APP_ENV=local`, `APP_DEBUG=false`, `LOG_LEVEL=info`, `SESSION_DRIVER=database`, `CACHE_STORE=database`, `QUEUE_CONNECTION=database`, and `FILESYSTEM_DISK=local`. `SESSION_DOMAIN=null` keeps cookies host-scoped. A nullable `SESSION_SECURE_COOKIE` lets the framework mark cookies secure on HTTPS; HTTP local development must not force a secure-only cookie.
+
+Generate `APP_KEY` only for a fresh installation. Preserve the existing key on an update or restore. `composer run setup` is a fresh-install command, not an update or recovery procedure.
 
 Use database seeding only for initial account bootstrap. The bootstrap seeder creates a new administrator with a generated temporary password and requires a password change; transfer that password through a private channel. It preserves an existing account's credentials and role. Confirm that behavior in the deployed revision before using the seeder. Manage later accounts through the authenticated account screen, or create a staff account with:
 
@@ -50,7 +38,7 @@ Use database seeding only for initial account bootstrap. The bootstrap seeder cr
 php artisan users:create-staff example.staff --name="Example Staff" --no-interaction
 ```
 
-The command prints a temporary password. Keep terminal captures private. Start the local development environment with `composer run dev`, or run the app and Vite in separate terminals as needed. The local Vite hot-server exception relaxes resource CSP directives only when `APP_ENV=local` and the hot file exists. Build assets with `npm run build` before checking the production CSP.
+The command prints a temporary password. Keep terminal captures private. `composer run dev` starts the Laravel server, the database `voucher-ocr` worker, and Vite together using the installed `concurrently` package. Laravel and Vite bind to `127.0.0.1`; Ctrl+C stops the processes. The worker uses one attempt and a 60-second timeout. The local Vite hot-server exception relaxes resource CSP directives only when `APP_ENV=local` and the hot file exists. Build assets with `npm run build` before checking the production CSP.
 
 ## Existing office installation
 

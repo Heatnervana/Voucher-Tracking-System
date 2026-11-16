@@ -1,10 +1,10 @@
 # Developer guide
 
-Reviewed against the source on 2026-11-12. Start here when taking over development. Use [architecture](ARCHITECTURE.md) for trust boundaries, [setup and recovery](SETUP_AND_DEPLOYMENT.md) for operating procedures, and [office configuration](OFFICE_CONFIGURATION.md) for machine assumptions. The [security audit](SECURITY_AUDIT.md) records release evidence and remaining decisions.
+Source review: 2026-11-12; runtime and development instructions updated 2026-11-16. Start here when taking over development. Use [architecture](ARCHITECTURE.md) for trust boundaries, [setup and recovery](SETUP_AND_DEPLOYMENT.md) for operating procedures, and [office configuration](OFFICE_CONFIGURATION.md) for machine assumptions. The [security audit](SECURITY_AUDIT.md) records release evidence and remaining decisions.
 
 ## Stack and source map
 
-The installed framework is Laravel 12.70.1 with PHPUnit 11.5.57. The application uses Blade, Vite, Tailwind CSS, SQLite, private local PDF storage, database sessions/cache, and a database OCR queue. The review CLI runs PHP 8.5.11; Composer declares PHP `^8.2` and models 8.2.12 through `config.platform.php`. These are different facts. Check the web and worker binaries before selecting a runtime. See [dependency inventory](DEPENDENCIES.md) for locked versions and native dependencies.
+The installed framework is Laravel 12.72.0 with PHPUnit 11.5.57. The application uses Blade, Vite, Tailwind CSS, SQLite, private local PDF storage, database sessions/cache, and a database OCR queue. The 2026-11-16 cleanup verified PHP 8.2.12; the earlier 2026-11-12 review observed PHP 8.5.11 on the CLI. Composer declares PHP `^8.2` and models 8.2.12 through `config.platform.php`. Check the web and worker binaries before selecting a runtime. See [dependency inventory](DEPENDENCIES.md) for locked versions and native dependencies.
 
 | Change area | Source entry points |
 | --- | --- |
@@ -176,34 +176,17 @@ php --version
 composer --version
 node --version
 npm --version
-if (Test-Path -LiteralPath '.env') { throw 'Use a fresh disposable checkout.' }
-if (Test-Path -LiteralPath 'database/database.sqlite') { throw 'Review the existing database first.' }
-if (@(Get-ChildItem Env: | Where-Object { $_.Name -like 'DB_*' -or $_.Name -in @('LARAVEL_STORAGE_PATH', 'APP_CONFIG_CACHE') }).Count -gt 0) {
-    throw 'Remove inherited database/storage/cache-path overrides in this development terminal first.'
-}
-composer install --prefer-dist --no-interaction
+composer run setup
 composer show --direct
-npm ci
-Copy-Item -LiteralPath '.env.example' -Destination '.env'
-New-Item -ItemType File -Path 'database/database.sqlite' | Out-Null
-php artisan key:generate --no-interaction
-php artisan migrate --no-interaction
 php artisan db:seed --no-interaction
-npm run build
-php artisan serve --host=127.0.0.1 --port=8000 --no-interaction
+composer run dev
 ```
 
-The example environment uses local SQLite under that checkout, private local storage and database sessions/cache/queue. The seed command bootstraps only an account-empty installation, including checking soft-deleted accounts. It prints a generated one-time temporary administrator password; keep the output private and change the password at first sign-in. Re-seeding does not reset an existing account. For another local staff account, use `php artisan users:create-staff example.staff --name="Example Staff" --no-interaction` and protect its printed temporary password too.
+Setup refuses an existing environment, cached configuration, populated SQLite database, or inherited key/environment/database/storage/cache settings before installing dependencies or generating a key. See [setup and recovery](SETUP_AND_DEPLOYMENT.md) for the exact checks and how to handle an interrupted setup. The example environment uses local SQLite under that checkout, private local storage and database sessions/cache/queue. The seed command bootstraps only an account-empty installation, including checking soft-deleted accounts. It prints a generated one-time temporary administrator password; keep the output private and change the password at first sign-in. Re-seeding does not reset an existing account. For another local staff account, use `php artisan users:create-staff example.staff --name="Example Staff" --no-interaction` and protect its printed temporary password too.
 
 Generate an application key only for a new installation. Never use `key:generate`, `composer setup`, `migrate:fresh`, `db:wipe`, or copying `.env.example` as an update or production recovery procedure. Follow [setup and recovery](SETUP_AND_DEPLOYMENT.md) for existing installations.
 
-Run `npm run dev` in another terminal for frontend work. Run the OCR worker against the same isolated checkout when native tools are configured:
-
-```powershell
-php artisan queue:work database --queue=voucher-ocr --sleep=1 --tries=1 --timeout=60 --memory=256 --max-time=3600 --no-interaction
-```
-
-This foreground worker exits after its maximum runtime; restart it when needed. Avoid the office startup wrappers for development because they can start the machine's scheduled task. Missing OCR tools leave manual entry available.
+`composer run dev` starts the Laravel server, the database `voucher-ocr` worker, and Vite together, with both web servers bound to `127.0.0.1`. Ctrl+C stops them. Avoid the office startup wrappers for development because they can start the machine's scheduled task. Missing OCR tools leave manual entry available.
 
 ## Change and test selection
 

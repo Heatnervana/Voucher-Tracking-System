@@ -6,32 +6,20 @@ The current deployment is private office hosting on a Windows PC, with optional 
 
 ## Fresh development installation
 
-Use the installed package versions and committed lockfiles. The package PHP requirement is `^8.2`; verify a maintained compatible runtime and its extensions. The audit used PHP 8.5.11 and Node 24 tooling. See [runtime differences and setup](docs/SETUP_AND_DEPLOYMENT.md) before operating the existing Windows server.
+Use the installed package versions and committed lockfiles. The package PHP requirement is `^8.2`; verify a maintained compatible runtime and its extensions. The 2026-11-16 cleanup verified Laravel 12.72.0 with PHP 8.2.12 and Node 24 tooling. The earlier 2026-11-12 audit observed PHP 8.5.11 on the CLI. See [runtime differences and setup](docs/SETUP_AND_DEPLOYMENT.md) before operating the existing Windows server.
 
 ```powershell
-composer install --prefer-dist --no-interaction
-Copy-Item .env.example .env
-php artisan key:generate --no-interaction
-New-Item -ItemType File database/database.sqlite
-php artisan migrate --no-interaction
-npm ci
-npm run build
+composer run setup
 php artisan db:seed --no-interaction
 ```
 
-Run these commands only for a new disposable installation. Keep the generated application key and private database safe. Never replace a live `.env`, recreate its database, or regenerate its key as an update procedure. The bootstrap seeder generates a one-time temporary administrator password only when no accounts exist; change it at first sign-in. Treat its console output as a credential. It skips existing installations without changing accounts.
+Run these commands only for a new disposable installation. Setup refuses an existing `.env`, cached configuration, populated SQLite database, or inherited key/environment/database/storage/cache settings before installing dependencies or generating a key. Keep the generated application key and private database safe. Never replace a live `.env`, recreate its database, or regenerate its key as an update procedure. The bootstrap seeder generates a one-time temporary administrator password only when no accounts exist; change it at first sign-in. Treat its console output as a credential. It skips existing installations without changing accounts.
 
 ```powershell
-php artisan serve --host=127.0.0.1 --port=8000
+composer run dev
 ```
 
-In a second terminal, start the amount worker when local OCR tools are configured:
-
-```powershell
-php artisan queue:work database --queue=voucher-ocr --tries=1 --timeout=60 --no-interaction
-```
-
-For frontend development, `npm run dev` starts Vite; the hot-server CSP exception is restricted to the local environment. Production uses `npm run build` and must not retain a stale `public/hot` file. Uploaded PDFs belong on the private local disk, never under `public/`.
+The development command starts the Laravel server, the database `voucher-ocr` worker, and Vite together. Both web servers bind to `127.0.0.1`; stop them with Ctrl+C. Missing native OCR tools leave amounts available for manual entry. The Vite hot-server CSP exception is restricted to the local environment. Production uses `npm run build` and must not retain a stale `public/hot` file. Uploaded PDFs belong on the private local disk, never under `public/`.
 
 ## Tests and security checks
 
