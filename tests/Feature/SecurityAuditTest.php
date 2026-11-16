@@ -102,7 +102,7 @@ class SecurityAuditTest extends TestCase
     {
         $voucher = $this->voucher();
         $staff = User::factory()->create();
-        $this->actingAs($staff)->withHeader('Range', 'bytes=0-20')->get(route('vouchers.pdf', $voucher))->assertOk();
+        $this->actingAs($staff)->withHeader('Range', 'bytes=0-20')->get(route('vouchers.pdf', $voucher))->assertStatus(206);
         $this->assertDatabaseHas('activity_logs', ['action' => 'voucher.viewed', 'actor_id' => $staff->id, 'subject_id' => $voucher->id]);
     }
 
@@ -110,7 +110,7 @@ class SecurityAuditTest extends TestCase
     {
         $voucher = $this->voucher();
         $staff = User::factory()->create();
-        $this->actingAs($staff)->withHeader('Range', 'bytes=10-20')->get(route('vouchers.pdf', $voucher))->assertOk();
+        $this->actingAs($staff)->withHeader('Range', 'bytes=10-20')->get(route('vouchers.pdf', $voucher))->assertStatus(206);
         $this->assertDatabaseHas('activity_logs', ['action' => 'voucher.viewed', 'actor_id' => $staff->id, 'subject_id' => $voucher->id]);
     }
 

@@ -28,6 +28,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -547,11 +548,18 @@ class VoucherController extends Controller
     /**
      * SECURITY: Authenticated shared-library access serves the bound record's server-managed private path.
      */
-    public function pdf(Voucher $voucher)
+    public function pdf(Request $request, Voucher $voucher): BinaryFileResponse
     {
         abort_unless(Storage::disk('local')->exists($voucher->file_path), 404);
 
-        return Storage::disk('local')->response($voucher->file_path, basename($voucher->file_path), ['Content-Type' => 'application/pdf', 'Content-Disposition' => 'inline']);
+        $response = response()->file(Storage::disk('local')->path($voucher->file_path), ['Content-Type' => 'application/pdf', 'Content-Disposition' => 'inline'])
+            ->prepare($request);
+        // Symfony 7.4 retains the file length on an empty 416; correct it before routing prepares the response again.
+        if ($response->getStatusCode() === 416) {
+            $response->headers->set('Content-Length', '0');
+        }
+
+        return $response;
     }
 
     /**
