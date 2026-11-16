@@ -6,9 +6,6 @@
 
 @theme {
     --font-sans: 'Segoe UI', system-ui, sans-serif;
-    --color-harbor: #123d52;
-    --color-tide: #2f8191;
-    --color-canvas: #f4f8f8;
 }
 
 * { box-sizing: border-box; }
@@ -17,7 +14,6 @@ a { color: inherit; text-decoration: none; }
 button, input, select { font: inherit; }
 .topbar { height: 74px; display: flex; align-items: center; gap: 48px; padding: 0 clamp(20px, 5vw, 76px); background: rgba(255,255,255,.96); border-bottom: 1px solid #e3ecee; box-shadow: 0 6px 24px #113b4b0d; }
 .brand { display: flex; align-items: center; gap: 11px; min-width: max-content; }
-.brand-mark { display: grid; place-items: center; width: 39px; height: 39px; border-radius: 13px 13px 13px 3px; background: #123d52; color: #fff; font: 700 20px Georgia,serif; }
 .brand strong,.brand small { display: block; }.brand strong { font-size: 14px; letter-spacing: .08em; }.brand small { color: #69808a; font-size: 11px; margin-top: 2px; }
 .nav-links { display: flex; gap: 28px; align-items: center; flex: 1; color: #496572; font-size: 13px; }.nav-links a:hover,.subtle-link:hover { color: #188094; }
 .account { display: flex; align-items: center; gap: 18px; color: #5c737c; font-size: 12px; }.text-button { border: 0; background: transparent; color: #1c7180; cursor: pointer; font-weight: 600; }
