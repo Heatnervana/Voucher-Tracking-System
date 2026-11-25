@@ -19,6 +19,8 @@ class ActivityLog extends Model
         'voucher.details_changed' => 'PDF details changed',
         'voucher.moved' => 'PDF moved',
         'voucher.amount_changed' => 'Amount changed',
+        'voucher.category_changed' => 'Category changed',
+        'voucher.category_read' => 'Category detected automatically',
         'voucher.amount_read' => 'Amount read automatically',
         'voucher.deleted' => 'PDF moved to recycle bin',
         'voucher.restored' => 'PDF restored',

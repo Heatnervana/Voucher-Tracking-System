@@ -59,6 +59,7 @@ Route::middleware(['auth', 'auth.session'])->group(function (): void {
             Route::post('/vouchers/{voucher}/move', [VoucherController::class, 'move'])->middleware(LockVoucherFiles::class)->name('vouchers.move');
             Route::patch('/vouchers/{voucher}/filename', [VoucherController::class, 'rename'])->middleware(LockVoucherFiles::class)->name('vouchers.rename');
             Route::patch('/vouchers/{voucher}/amount', [VoucherController::class, 'updateAmount'])->middleware(LockVoucherFiles::class)->name('vouchers.update-amount');
+            Route::patch('/vouchers/{voucher}/category', [VoucherController::class, 'updateCategory'])->middleware(LockVoucherFiles::class)->name('vouchers.update-category');
             Route::delete('/vouchers/{voucher}', [VoucherController::class, 'destroy'])->middleware(LockVoucherFiles::class)->name('vouchers.destroy');
             Route::get('/years/create', [YearController::class, 'create'])->name('years.create');
             Route::post('/years', [YearController::class, 'store'])->name('years.store');

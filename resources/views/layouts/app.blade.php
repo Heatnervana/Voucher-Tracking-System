@@ -24,10 +24,13 @@
                 @can('manage-vouchers')
                 @if (! auth()->user()->must_change_password)
                     @php($notificationLabel = $notificationAmountCount === 0 ? 'No vouchers need an amount' : $notificationAmountCount.' '.($notificationAmountCount === 1 ? 'voucher needs' : 'vouchers need').' an amount')
-                    <a id="amount-notification" class="notification-bell" href="{{ route('vouchers.index', ['amount_status' => 'missing']) }}" aria-label="Notifications: {{ $notificationLabel }}" title="{{ $notificationLabel }}">
+                    @if ($notificationCategoryCount > 0)
+                        @php($notificationLabel .= '; '.$notificationCategoryCount.' '.($notificationCategoryCount === 1 ? 'voucher needs' : 'vouchers need').' a category')
+                    @endif
+                    <a id="amount-notification" class="notification-bell" href="{{ $notificationCategoryCount > 0 ? route('vouchers.index', ['needs_review' => '1']) : route('vouchers.index', ['amount_status' => 'missing']) }}" data-review-url="{{ route('vouchers.index', ['needs_review' => '1']) }}" data-amount-review-url="{{ route('vouchers.index', ['amount_status' => 'missing']) }}" aria-label="Notifications: {{ $notificationLabel }}" title="{{ $notificationLabel }}">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
-                        @if ($notificationAmountCount > 0)
-                            <span class="notification-count" aria-hidden="true">{{ $notificationAmountCount }}</span>
+                        @if ($notificationAmountCount + $notificationCategoryCount > 0)
+                            <span class="notification-count" aria-hidden="true">{{ $notificationAmountCount + $notificationCategoryCount }}</span>
                         @endif
                     </a>
                 @endif

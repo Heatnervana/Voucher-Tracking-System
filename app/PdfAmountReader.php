@@ -20,29 +20,57 @@ class PdfAmountReader
      */
     public function read(string $pdfPath): ?string
     {
+        return $this->readDetails($pdfPath, readUtility: false)['amount'];
+    }
+
+    /**
+     * @return array{amount: ?string, utility: ?string}
+     */
+    public function readDetails(string $pdfPath, bool $readUtility = true, bool $readAmount = true): array
+    {
+        $result = ['amount' => null, 'utility' => null];
         if (! is_file($pdfPath) || filesize($pdfPath) === 0) {
-            return null;
+            return $result;
         }
 
         $pdftotext = $this->executables->find('pdftotext');
         if ($pdftotext !== null) {
             $xml = $this->run([$pdftotext, '-f', '1', '-l', '1', '-bbox', $pdfPath, '-'], 5);
-            $amount = $xml !== null ? $this->extractor->extract($this->textWords($xml)) : null;
-            if ($amount !== null) {
-                return $amount;
+            if ($xml !== null) {
+                $words = $this->textWords($xml);
+                $result['amount'] = $readAmount ? $this->extractor->extract($words) : null;
+                $result['utility'] = $readUtility ? VoucherUtilityCategory::fromWords($words) : null;
             }
         }
+
+        if ((! $readAmount || $result['amount'] !== null) && (! $readUtility || $result['utility'] !== null)) {
+            return $result;
+        }
+
+        $words = $this->scanWords($pdfPath);
+        if ($readAmount && $result['amount'] === null) {
+            $result['amount'] = $this->extractor->extract($words);
+        }
+        if ($readUtility && $result['utility'] === null) {
+            $result['utility'] = VoucherUtilityCategory::fromWords($words);
+        }
+
+        return $result;
+    }
+
+    private function scanWords(string $pdfPath): array
+    {
 
         $tesseract = $this->executables->find('tesseract', null, [
             (getenv('ProgramFiles') ?: 'C:\Program Files').'\Tesseract-OCR',
         ]);
         if ($tesseract === null) {
-            return null;
+            return [];
         }
 
         $imageBase = tempnam(sys_get_temp_dir(), 'voucher-amount-');
         if ($imageBase === false) {
-            return null;
+            return [];
         }
         $image = $imageBase.'.png';
 
@@ -59,15 +87,15 @@ class PdfAmountReader
                     '-File', __DIR__.'/render-voucher-page.ps1', '-PdfPath', $pdfPath, '-ImagePath', $image,
                 ], 20);
             } else {
-                return null;
+                return [];
             }
 
             if ($rendered === null || ! is_file($image)) {
-                return null;
+                return [];
             }
             $tsv = $this->run([$tesseract, $image, 'stdout', '-l', 'eng', '--psm', '3', 'tsv'], 20);
 
-            return $tsv !== null ? $this->extractor->extract($this->ocrWords($tsv)) : null;
+            return $tsv !== null ? $this->ocrWords($tsv) : [];
         } finally {
             @unlink($image);
             @unlink($imageBase);

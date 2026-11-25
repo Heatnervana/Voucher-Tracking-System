@@ -35,25 +35,42 @@ export function watchSavedVoucherAmounts(showWarning) {
                     if (editor) editor.textContent = voucher.status === 'ready' ? 'Edit amount' : 'Add amount';
                     const help = document.querySelector('[data-pending-amount-help]');
                     if (help) help.hidden = voucher.status !== 'pending';
+                    const category = document.querySelector('[data-saved-category]');
+                    if (category) {
+                        category.textContent = ({ electricity: 'Electricity', water: 'Water' })[voucher.category]
+                            ?? (voucher.category_status === 'manual' ? 'Category needed' : voucher.category_status?.startsWith('pending') ? 'Reading category…' : '');
+                        category.closest('[data-saved-category-row]').hidden = category.textContent === '';
+                    }
                 }
             }
 
             if (bell && Number.isInteger(result.manual_count)) {
                 const count = result.manual_count;
-                const label = count === 0 ? 'No vouchers need an amount'
+                const categoryCount = Number.isInteger(result.category_manual_count) ? result.category_manual_count : 0;
+                const total = count + categoryCount;
+                const amountLabel = count === 0 ? 'No vouchers need an amount'
                     : `${count} ${count === 1 ? 'voucher needs' : 'vouchers need'} an amount`;
+                const label = categoryCount === 0 ? amountLabel
+                    : `${amountLabel}; ${categoryCount} ${categoryCount === 1 ? 'voucher needs' : 'vouchers need'} a category`;
+                bell.href = categoryCount > 0 ? bell.dataset.reviewUrl : bell.dataset.amountReviewUrl;
                 bell.setAttribute('aria-label', `Notifications: ${label}`);
                 bell.title = label;
                 let badge = bell.querySelector('.notification-count');
-                if (count > 0) {
+                if (total > 0) {
                     if (!badge) {
                         badge = document.createElement('span');
                         badge.className = 'notification-count';
                         badge.setAttribute('aria-hidden', 'true');
                         bell.append(badge);
                     }
-                    badge.textContent = count;
+                    badge.textContent = total;
                 } else badge?.remove();
+                const categoryNotice = document.querySelector('#missing-category-notice');
+                if (categoryNotice) {
+                    categoryNotice.hidden = categoryCount === 0;
+                    categoryNotice.querySelector('strong').textContent = categoryCount > 0 ? `${categoryCount} voucher(s) need a category.` : '';
+                }
+
                 const notice = document.querySelector('#missing-amount-notice');
                 if (notice) {
                     notice.hidden = count === 0;

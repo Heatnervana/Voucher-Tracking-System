@@ -74,7 +74,7 @@ if (voucherPreview) {
             button.setAttribute('aria-pressed', 'true');
 
             const voucherLink = row.querySelector('.record-link');
-            voucherPreview.querySelector('[data-preview-title]').textContent = row.querySelector('.voucher-payee').textContent.trim();
+            voucherPreview.querySelector('[data-preview-title]').textContent = row.querySelector('[data-library-payee]').textContent.trim();
             voucherPreview.querySelector('[data-preview-dv]').textContent = voucherLink.textContent.trim();
             voucherPreview.querySelector('[data-preview-check]').textContent = row.querySelector('.voucher-check').textContent.trim();
             voucherPreview.querySelector('[data-preview-type]').textContent = row.dataset.previewFolder;

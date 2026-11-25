@@ -61,13 +61,14 @@
             <p id="voucher-upload-status" role="status" aria-live="polite"></p>
         </div>
         <div id="existing-folder-warning" class="notice folder-warning" role="alert" hidden>
-            <strong>This month already has saved PDFs</strong>
+            <strong>Choose how to upload to this folder</strong>
             <p data-folder-warning-message></p>
-            <p>Replace a PDF when both its Check / ADA and DV numbers match. Keep other saved PDFs. Changes apply when you save the reviewed vouchers.</p>
+            <p>The app has not compared your selected files yet. Vouchers with a new number pair will be added when you save.</p>
+            <p>Replacement is optional and applies only when both the Check / ADA number and the DV number match a voucher in this folder.</p>
             <div class="button-row">
                 <button class="button secondary" type="button" data-folder-action="cancel">Cancel upload</button>
-                <button class="button secondary" type="button" data-folder-action="keep">Keep saved PDFs</button>
-                <button class="button primary" type="button" data-folder-action="replace">Replace matching PDFs</button>
+                <button class="button primary" type="button" data-folder-action="keep">Add without replacing</button>
+                <button class="button secondary" type="button" data-folder-action="replace">Allow replacement of matches</button>
             </div>
         </div>
 

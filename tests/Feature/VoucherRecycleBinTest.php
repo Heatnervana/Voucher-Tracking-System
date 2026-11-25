@@ -87,15 +87,19 @@ class VoucherRecycleBinTest extends TestCase
         $this->assertSame('%PDF original', Storage::disk('local')->get($voucher->file_path));
     }
 
-    public function test_trash_and_restore_stop_stale_ocr_without_restarting_a_second_read(): void
+    #[TestWith(['pending', 'none'])]
+    #[TestWith(['pending_required', 'manual'])]
+    public function test_trash_and_restore_stop_stale_ocr_without_restarting_a_second_read(string $previousCategoryStatus, string $expectedCategoryStatus): void
     {
         $voucher = $this->prepareVoucher();
-        $voucher->update(['amount' => null, 'amount_status' => 'pending', 'amount_read_token' => 'old-reading']);
+        $voucher->update(['amount' => null, 'amount_status' => 'pending', 'amount_read_token' => 'old-reading', 'utility_status' => $previousCategoryStatus]);
         $this->delete(route('vouchers.destroy', $voucher))->assertRedirect();
         $this->post('/recycle-bin/'.$voucher->id.'/restore')->assertRedirect();
         $this->assertSame('manual', $voucher->fresh()->amount_status);
         $this->assertNotSame('old-reading', $voucher->fresh()->amount_read_token);
         $this->assertNull($voucher->fresh()->amount);
+        $this->assertSame($expectedCategoryStatus, $voucher->fresh()->utility_status);
+        $this->assertDatabaseCount('jobs', 0);
     }
 
     public function test_bulk_purge_rolls_back_every_pdf_and_audit_if_the_second_audit_write_fails(): void

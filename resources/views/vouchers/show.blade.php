@@ -7,7 +7,34 @@
 @endcan
 <section class="detail-grid"><article class="panel pdf-panel"><iframe title="Voucher PDF" src="{{ route('vouchers.pdf', $voucher) }}"></iframe></article><aside class="panel metadata"><p class="eyebrow">VOUCHER DETAILS</p><div><small>Amount</small><strong class="large-amount" data-saved-amount data-saved-voucher-id="{{ $voucher->id }}">@if ($voucher->amount === null){{ $voucher->amount_status === 'pending' ? 'Reading amount…' : 'Amount needed' }}
 @else ₱ {{ number_format((float) $voucher->amount, 2) }}@endif</strong></div><div><small>Uploaded by</small><strong>{{ $voucher->uploader->name }}</strong></div><div><small>Saved filename</small><strong class="break-word" data-saved-filename>{{ basename($voucher->file_path) }}</strong></div>
+@php
+    $categoryLabel = in_array($voucher->utility_category, ['electricity', 'water'], true)
+        ? \App\VoucherUtilityCategory::LABELS[$voucher->utility_category] : '';
+    if ($categoryLabel === '' && auth()->user()->can('manage-vouchers')) {
+        $categoryLabel = match ($voucher->utility_status) {
+            'manual' => 'Category needed',
+            'pending', 'pending_required' => 'Reading category…',
+            default => '',
+        };
+    }
+@endphp
+<div data-saved-category-row @if ($categoryLabel === '')hidden @endif><small>Category</small><strong data-saved-category>{{ $categoryLabel }}</strong></div>
 @can('manage-vouchers')
+<details class="filename-editor" @if ($voucher->utility_status === 'manual' || $errors->has('utility_category')) open @endif>
+    <summary class="button secondary">{{ $voucher->utility_category ? 'Edit category' : 'Set category' }}</summary>
+    <form method="POST" action="{{ route('vouchers.update-category', $voucher) }}" class="stack">
+        @csrf @method('PATCH')
+        <label>Category
+            <select name="utility_category" required>
+                <option value="" disabled @selected(old('utility_category', $voucher->utility_category) === null)>Choose a category</option>
+                @foreach (\App\VoucherUtilityCategory::MANUAL_OPTIONS as $value => $label)
+                    <option value="{{ $value }}" @selected(old('utility_category', $voucher->utility_category) === $value)>{{ $label }}</option>
+                @endforeach
+            </select>
+        </label>
+        <button class="button primary" type="submit">Save category</button>
+    </form>
+</details>
 <p class="hint" data-pending-amount-help @if ($voucher->amount_status !== 'pending') hidden @endif>Reading continues in the background. You can enter an amount yourself; it will not be overwritten.</p>
 <details class="filename-editor" id="amount-editor" @if ($voucher->amount === null || $errors->has('amount')) open @endif>
 <summary class="button secondary">{{ $voucher->amount === null ? 'Add amount' : 'Edit amount' }}</summary>

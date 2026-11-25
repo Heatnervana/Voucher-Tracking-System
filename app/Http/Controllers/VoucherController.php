@@ -10,6 +10,7 @@ use App\Models\VoucherYear;
 use App\StagedVoucherUpload;
 use App\VoucherFilename;
 use App\VoucherRecycleBin;
+use App\VoucherUtilityCategory;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\QueryException;
@@ -51,9 +52,12 @@ class VoucherController extends Controller
             'year' => ['nullable', 'integer', 'exists:years,year'],
             'type' => ['nullable', Rule::in(['ADA', 'CHECK'])],
             'month' => ['nullable', 'integer', 'between:1,12'],
+            'category' => ['nullable', Rule::in(['electricity', 'water'])],
         ];
         if ($request->user()->can('manage-vouchers')) {
             $rules['amount_status'] = ['nullable', Rule::in(['missing'])];
+            $rules['utility_status'] = ['nullable', Rule::in(['missing'])];
+            $rules['needs_review'] = ['nullable', Rule::in(['1'])];
         }
 
         $filters = $request->validate($rules);
@@ -62,6 +66,10 @@ class VoucherController extends Controller
             ->when($filters['type'] ?? null, fn ($query, $type) => $query->where('type', $type))
             ->when($filters['month'] ?? null, fn ($query, $month) => $query->where('month', $month))
             ->when(($filters['amount_status'] ?? null) === 'missing', fn ($query) => $query->needsAmount())
+            ->when(($filters['utility_status'] ?? null) === 'missing', fn ($query) => $query->needsUtilityCategory())
+            ->when($filters['needs_review'] ?? null, fn ($query) => $query->where(fn ($review) => $review
+                ->needsAmount()->orWhere(fn ($category) => $category->needsUtilityCategory())))
+            ->when($filters['category'] ?? null, fn ($query, $category) => $query->where('utility_category', $category))
             ->orderByRaw("LENGTH(LTRIM(checkada_no, '0'))")
             ->orderByRaw("LTRIM(checkada_no, '0') COLLATE NOCASE")
             ->orderBy('checkada_no')->orderBy('id')->paginate(20)->withQueryString();
@@ -80,6 +88,7 @@ class VoucherController extends Controller
             'folderCount' => $folderCount,
             'monthCount' => $monthCount,
             'missingAmountCount' => Voucher::needsAmount()->count(),
+            'missingCategoryCount' => $request->user()->can('manage-vouchers') ? Voucher::needsUtilityCategory()->count() : 0,
         ]);
     }
 
@@ -87,14 +96,18 @@ class VoucherController extends Controller
     {
         $request->session()->reflash();
         $data = $request->validate(['ids' => ['sometimes', 'array', 'max:20'], 'ids.*' => ['integer', 'min:1']]);
-        $vouchers = Voucher::whereIn('id', $data['ids'] ?? [])->get(['id', 'amount', 'amount_status']);
+        $vouchers = Voucher::whereIn('id', $data['ids'] ?? [])->get(['id', 'amount', 'amount_status', 'utility_category', 'utility_status']);
+        $canManage = $request->user()->can('manage-vouchers');
 
         return response()->json([
             'vouchers' => $vouchers->map(fn (Voucher $voucher): array => [
                 'id' => $voucher->id, 'amount' => $voucher->amount,
                 'status' => $voucher->amount !== null ? 'ready' : $voucher->amount_status,
+                'category' => $voucher->utility_category,
+                'category_status' => $canManage ? $voucher->utility_status : null,
             ]),
-            'manual_count' => $request->user()->can('manage-vouchers') ? Voucher::needsAmount()->count() : null,
+            'manual_count' => $canManage ? Voucher::needsAmount()->count() : null,
+            'category_manual_count' => $canManage ? Voucher::needsUtilityCategory()->count() : null,
             'pending_count' => Voucher::whereNull('amount')->where('amount_status', 'pending')->count(),
         ])->header('Cache-Control', 'private, no-store');
     }
@@ -119,8 +132,10 @@ class VoucherController extends Controller
 
         $existing = Voucher::where('year', $data['year'])->where('type', $data['type'])->where('month', $data['month'])->get();
         if ($existing->isNotEmpty() && ! isset($data['folder_action'])) {
-            return response()->json(['code' => 'existing_folder', 'existing_files' => $existing->count(),
-                'message' => Carbon::create()->month((int) $data['month'])->format('F').' '.$data['year'].' / '.$data['type'].' already contains '.$existing->count().' PDFs. Replace PDFs whose Check / ADA and DV numbers both match, or keep saved PDFs and add new ones?'], 409);
+            $count = $existing->count();
+
+            return response()->json(['code' => 'existing_folder', 'existing_files' => $count,
+                'message' => Carbon::create()->month((int) $data['month'])->format('F').' '.$data['year'].' / '.$data['type'].' has '.$count.($count === 1 ? ' saved PDF.' : ' saved PDFs.')], 409);
         }
 
         $this->clearStagedUpload();
@@ -320,7 +335,8 @@ class VoucherController extends Controller
             return back()->withInput()->with('upload_errors', $errors ?: ['No PDF files were received.']);
         }
 
-        session(['voucher_upload' => ['year' => (int) $data['year'], 'type' => $data['type'], 'month' => (int) $data['month'], 'files' => $staged, 'batch_id' => (string) Str::uuid()]]);
+        session(['voucher_upload' => ['year' => (int) $data['year'], 'type' => $data['type'], 'month' => (int) $data['month'], 'files' => $staged, 'batch_id' => (string) Str::uuid(),
+        ]]);
 
         return redirect()->route('vouchers.confirm')->with('upload_errors', $errors);
     }
@@ -367,7 +383,8 @@ class VoucherController extends Controller
 
         $files = [];
         foreach ($this->withDetectedAmounts($upload)['files'] as $id => $file) {
-            $files[$id] = ['status' => $file['amount_status'], 'amount' => $file['detected_amount']];
+            $files[$id] = ['status' => $file['amount_status'], 'amount' => $file['detected_amount'],
+                'category' => $file['detected_category'], 'category_status' => $file['utility_status']];
         }
 
         return response()->json(['files' => $files])->header('Cache-Control', 'no-store');
@@ -471,6 +488,10 @@ class VoucherController extends Controller
                 }
             }
 
+            $utility = $replacement?->utility_status === 'confirmed'
+                ? ['category' => $replacement->utility_category, 'status' => 'confirmed']
+                : $this->readingCategory($reading, $file['original_name'] ?? '');
+
             $payeeForName = trim(preg_replace('/[^A-Za-z0-9 ._-]/u', '', $data['payee']) ?? '');
             $destination = sprintf('vouchers/%d/%s/%02d/%s_%s_%s.pdf', $upload['year'], $upload['type'], $upload['month'], $data['checkada_no'], $data['dv_number'], Str::upper($payeeForName ?: 'PAYEE'));
 
@@ -481,6 +502,8 @@ class VoucherController extends Controller
                     'payee' => $data['payee'],
                     'amount' => $data['amount'] ?? null,
                     'amount_status' => $data['amount_status'],
+                    'utility_category' => $utility['category'],
+                    'utility_status' => $utility['status'],
                     'amount_read_token' => (string) Str::uuid(),
                     'amount_retry_count' => 0,
                     'year' => $upload['year'],
@@ -499,12 +522,12 @@ class VoucherController extends Controller
                 $seenPairs[$pairKey] = $file['original_name'];
                 Cache::forget('voucher-amount:'.$id);
                 unset($remaining[$id]);
-                if ($voucher->amount_status === 'pending') {
+                if ($voucher->amount_status === 'pending' || in_array($voucher->utility_status, ['pending', 'pending_required'], true)) {
+                    $job = new ReadSavedVoucherAmount($voucher->id, $voucher->amount_read_token, VoucherUtilityCategory::fromName($file['original_name'] ?? ''));
                     try {
-                        Bus::dispatch(new ReadSavedVoucherAmount($voucher->id, $voucher->amount_read_token));
+                        Bus::dispatch($job);
                     } catch (\Throwable $exception) {
-                        Voucher::whereKey($voucher->id)->whereNull('amount')->where('amount_status', 'pending')
-                            ->update(['amount_status' => 'manual']);
+                        $job->failed($exception);
                         report($exception);
                     }
                 }
@@ -583,6 +606,35 @@ class VoucherController extends Controller
         DB::transaction(fn () => $voucher->update(['amount' => $data['amount'], 'amount_status' => 'ready']));
 
         return redirect()->route('vouchers.show', $voucher)->with('status', 'Amount saved.');
+    }
+
+    public function updateCategory(Request $request, Voucher $voucher): RedirectResponse
+    {
+        $data = $request->validate([
+            'utility_category' => ['required', Rule::in(array_keys(VoucherUtilityCategory::MANUAL_OPTIONS))],
+        ]);
+        $choice = [
+            'utility_category' => $data['utility_category'] === 'other' ? null : $data['utility_category'],
+            'utility_status' => 'confirmed',
+        ];
+        for ($attempt = 0; $attempt < 2; $attempt++) {
+            $current = Voucher::query()->findOrFail($voucher->id);
+            $previous = ['utility_category' => $current->utility_category, 'utility_status' => $current->utility_status];
+
+            if ($previous === $choice || DB::transaction(function () use ($current, $previous, $choice): bool {
+                if (Voucher::query()->whereKey($current->id)->where($previous)->update($choice) !== 1) {
+                    return false;
+                }
+
+                app(ActivityRecorder::class)->record($current, 'voucher.category_changed', $previous, $choice);
+
+                return true;
+            }, 3)) {
+                return redirect()->route('vouchers.show', $voucher)->with('status', 'Category saved.');
+            }
+        }
+
+        return back()->withInput()->withErrors(['utility_category' => 'The category changed while you were saving. Please review the voucher and try again.']);
     }
 
     /**
@@ -984,7 +1036,7 @@ class VoucherController extends Controller
         $parsed = $filename->parse($originalName);
         try {
             Cache::put('voucher-amount:'.$id, ['status' => 'pending', 'amount' => null], now()->addDay());
-            ReadVoucherAmount::dispatch($id);
+            ReadVoucherAmount::dispatch($id, VoucherUtilityCategory::fromName($originalName));
         } catch (\Throwable $exception) {
             Cache::forget('voucher-amount:'.$id);
             report($exception);
@@ -1028,8 +1080,25 @@ class VoucherController extends Controller
             $result = $results['voucher-amount:'.$id] ?? null;
             $file['detected_amount'] = $result['amount'] ?? $file['detected_amount'];
             $file['amount_status'] = $result['status'] ?? ($file['detected_amount'] !== null ? 'ready' : 'manual');
+            $category = $this->readingCategory($result, $file['original_name'] ?? '');
+            $file['detected_category'] = $category['category'];
+            $file['utility_status'] = $category['status'];
         }
 
         return $upload;
+    }
+
+    /**
+     * @param  array{status?: string, amount?: ?string, utility?: ?string}|null  $reading
+     * @return array{category: ?string, status: string}
+     */
+    private function readingCategory(?array $reading, string $filename): array
+    {
+        $name = VoucherUtilityCategory::fromName($filename);
+        if (($reading['status'] ?? null) === 'pending' && ! isset(VoucherUtilityCategory::LABELS[$name])) {
+            return ['category' => null, 'status' => $name === 'review' ? 'pending_required' : 'pending'];
+        }
+
+        return VoucherUtilityCategory::resolve($reading['utility'] ?? null, $name);
     }
 }

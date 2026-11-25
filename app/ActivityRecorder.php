@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 
 class ActivityRecorder
 {
-    private const VOUCHER_FIELDS = ['checkada_no', 'dv_number', 'payee', 'amount', 'amount_status', 'year', 'type', 'month', 'uploaded_by', 'file_name'];
+    private const VOUCHER_FIELDS = ['checkada_no', 'dv_number', 'payee', 'amount', 'amount_status', 'utility_category', 'utility_status', 'year', 'type', 'month', 'uploaded_by', 'file_name'];
 
     private const USER_FIELDS = ['name', 'username', 'is_admin', 'must_change_password'];
 

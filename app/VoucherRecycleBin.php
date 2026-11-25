@@ -27,11 +27,15 @@ class VoucherRecycleBin
                 if ($voucher->trashed()) {
                     throw new RuntimeException('A selected voucher is already in the recycle bin.');
                 }
-                $voucher->forceFill([
+                $changes = [
                     'deleted_by' => $deletedBy,
                     'amount_read_token' => (string) Str::uuid(),
                     'amount_status' => $voucher->amount === null ? 'manual' : $voucher->amount_status,
-                ])->saveOrFail();
+                ];
+                if (in_array($voucher->utility_status, ['pending', 'pending_required'], true)) {
+                    $changes['utility_status'] = $voucher->utility_status === 'pending_required' ? 'manual' : 'none';
+                }
+                $voucher->forceFill($changes)->saveOrFail();
                 if (! $voucher->delete()) {
                     throw new RuntimeException('The voucher could not be moved to the recycle bin.');
                 }

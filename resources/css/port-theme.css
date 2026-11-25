@@ -287,8 +287,8 @@ body .library-filters { display: grid; grid-template-columns: minmax(0, 1fr); ga
 body .library-search-row .search-field input { min-height: 48px; padding-inline-start: 36px; }
 body .library-search-row .button.primary { min-height: 48px; background: var(--port-deep); border-color: var(--port-deep); }
 body .library-search-row .button.primary:hover { background: var(--workspace-accent-hover); border-color: var(--workspace-accent-hover); }
-.library-filters .library-filter-row { grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; max-width: 420px; gap: 8px; padding: 0; }
-.library-filters .library-filter-row:has([name='amount_status']) { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 568px; }
+.library-filters .library-filter-row { grid-template-columns: repeat(4, minmax(0, 1fr)); width: 100%; max-width: 568px; gap: 8px; padding: 0; }
+.library-filters .library-filter-row:has([name='amount_status']) { grid-template-columns: repeat(5, minmax(0, 1fr)); max-width: 710px; }
 body .library-filters .library-filter-row select { min-height: 46px; padding-inline: 8px; font-size: 15px; }
 .library-filters .clear-filters { justify-self: start; min-height: 36px; }
 
@@ -397,7 +397,7 @@ body .library-table .voucher-pagination .button { min-height: 44px; padding-inli
     .voucher-preview-button { width: 44px; min-height: 44px; }
 }
 @media (max-width: 560px) {
-    .library-filters .library-filter-row:has([name='amount_status']) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .library-filters .library-filter-row, .library-filters .library-filter-row:has([name='amount_status']) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 420px) {
     body .topbar { gap: 7px; }
