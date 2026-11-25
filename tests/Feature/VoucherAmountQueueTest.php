@@ -44,8 +44,8 @@ class VoucherAmountQueueTest extends TestCase
     public function test_worker_result_appears_in_review_and_manual_corrections_are_saved(): void
     {
         $id = $this->uploadPdf();
-        $this->mock(PdfAmountReader::class)->shouldReceive('read')->once()
-            ->with(Storage::disk('local')->path("staging/$id.pdf"))->andReturn('5250.00');
+        $this->mock(PdfAmountReader::class)->shouldReceive('readDetails')->once()
+            ->with(Storage::disk('local')->path("staging/$id.pdf"))->andReturn(['amount' => '5250.00', 'utility' => null]);
 
         $this->artisan('queue:work', ['connection' => 'database', '--queue' => 'voucher-ocr', '--once' => true, '--tries' => 1])->assertSuccessful();
         $this->getJson($this->statusUrl())->assertOk()
@@ -75,7 +75,7 @@ class VoucherAmountQueueTest extends TestCase
     public function test_unreadable_amount_and_expired_results_allow_manual_entry(): void
     {
         $id = $this->uploadPdf();
-        $this->mock(PdfAmountReader::class)->shouldReceive('read')->once()->andReturnNull();
+        $this->mock(PdfAmountReader::class)->shouldReceive('readDetails')->once()->andReturn(['amount' => null, 'utility' => null]);
         $this->artisan('queue:work', ['connection' => 'database', '--queue' => 'voucher-ocr', '--once' => true])->assertSuccessful();
         $this->getJson($this->statusUrl())->assertOk()->assertJsonPath("files.$id.status", 'manual')->assertJsonPath("files.$id.amount", null);
         Cache::forget("voucher-amount:$id");
@@ -85,7 +85,7 @@ class VoucherAmountQueueTest extends TestCase
     public function test_failed_worker_marks_the_amount_for_manual_entry(): void
     {
         $id = $this->uploadPdf();
-        $this->mock(PdfAmountReader::class)->shouldReceive('read')->once()->andThrow(new \RuntimeException('OCR unavailable'));
+        $this->mock(PdfAmountReader::class)->shouldReceive('readDetails')->once()->andThrow(new \RuntimeException('OCR unavailable'));
         $this->artisan('queue:work', ['connection' => 'database', '--queue' => 'voucher-ocr', '--once' => true, '--tries' => 1])->assertSuccessful();
         $this->getJson($this->statusUrl())->assertOk()->assertJsonPath("files.$id.status", 'manual');
         $this->assertDatabaseCount('failed_jobs', 1);
@@ -105,7 +105,7 @@ class VoucherAmountQueueTest extends TestCase
     public function test_removing_a_pdf_cancels_its_pending_amount_reading(): void
     {
         $id = $this->uploadPdf();
-        $this->mock(PdfAmountReader::class)->shouldNotReceive('read');
+        $this->mock(PdfAmountReader::class)->shouldNotReceive('readDetails');
         $this->postJson(route('vouchers.upload.remove-file'), ['batch_id' => session('voucher_upload.batch_id'), 'file_id' => $id])->assertOk();
         $this->artisan('queue:work', ['connection' => 'database', '--queue' => 'voucher-ocr', '--once' => true])->assertSuccessful();
         $this->assertFalse(Cache::has("voucher-amount:$id"));

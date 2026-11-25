@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
+use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
 
 class VoucherReplacementTest extends TestCase
@@ -34,7 +35,8 @@ class VoucherReplacementTest extends TestCase
     {
         $existing = $this->voucher('100001', '11');
         $this->postJson(route('vouchers.upload.start'), $this->folder())->assertConflict()
-            ->assertJsonPath('code', 'existing_folder')->assertJsonPath('existing_files', 1);
+            ->assertJsonPath('code', 'existing_folder')->assertJsonPath('existing_files', 1)
+            ->assertJsonPath('message', 'June 2026 / CHECK has 1 saved PDF.');
         $this->assertNull(session('voucher_upload'));
         Storage::disk('local')->assertExists($existing->file_path);
     }
@@ -120,6 +122,19 @@ class VoucherReplacementTest extends TestCase
         Queue::assertPushed(ReadSavedVoucherAmount::class, fn ($job) => $job->readToken === $existing->fresh()->amount_read_token);
     }
 
+    #[TestWith(['none', 'water'])]
+    #[TestWith(['confirmed', 'electricity'])]
+    public function test_replacement_updates_inferred_category_but_preserves_manual_choice(string $status, string $expected): void
+    {
+        $existing = $this->voucher('100001', '11');
+        $existing->update(['utility_category' => 'electricity', 'utility_status' => $status]);
+        $this->start('replace');
+
+        $this->save('11', '100001', originalName: 'WATER BILL.pdf')->assertRedirect(route('vouchers.index'));
+
+        $this->assertSame($expected, $existing->fresh()->utility_category);
+    }
+
     private function folder(): array
     {
         return ['year' => 2026, 'type' => 'CHECK', 'month' => 6];
@@ -130,7 +145,7 @@ class VoucherReplacementTest extends TestCase
         $this->postJson(route('vouchers.upload.start'), $this->folder() + ['folder_action' => $action])->assertOk();
     }
 
-    private function save(string $check, string $dv, ?string $amount = '25.00'): TestResponse
+    private function save(string $check, string $dv, ?string $amount = '25.00', string $originalName = 'replacement.pdf'): TestResponse
     {
         $upload = session('voucher_upload');
         $id = (string) Str::uuid();
@@ -139,7 +154,7 @@ class VoucherReplacementTest extends TestCase
         if ($amount === null) {
             Cache::put('voucher-amount:'.$id, ['status' => 'pending', 'amount' => null], 3600);
         }
-        $upload['files'][$id] = ['path' => $path, 'original_name' => 'replacement.pdf'];
+        $upload['files'][$id] = ['path' => $path, 'original_name' => $originalName];
 
         return $this->withSession(['voucher_upload' => $upload])->post(route('vouchers.finalize'), [
             'batch_id' => $upload['batch_id'], 'vouchers' => [$id => ['checkada_no' => $check, 'dv_number' => $dv, 'payee' => 'Replacement', 'amount' => $amount]],

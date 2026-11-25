@@ -30,6 +30,13 @@
             <label>Folder<select name="type"><option value="">All folders</option><option @selected(($filters['type'] ?? '') === 'ADA')>ADA</option><option @selected(($filters['type'] ?? '') === 'CHECK')>CHECK</option></select></label>
             <label>Year<select name="year"><option value="">All years</option>@foreach ($years as $year)<option value="{{ $year }}" @selected(($filters['year'] ?? '') == $year)>{{ $year }}</option>@endforeach</select></label>
             <label>Month<select name="month"><option value="">All months</option>@foreach (range(1, 12) as $month)<option value="{{ $month }}" @selected(($filters['month'] ?? '') == $month)>{{ \Carbon\Carbon::create()->month($month)->format('F') }}</option>@endforeach</select></label>
+            <label>Category
+                <select name="category">
+                    <option value="">All categories</option>
+                    <option value="electricity" @selected(($filters['category'] ?? '') === 'electricity')>Electricity</option>
+                    <option value="water" @selected(($filters['category'] ?? '') === 'water')>Water</option>
+                </select>
+            </label>
             @if ($canManage)
                 <label>Amount status<select name="amount_status"><option value="">All amounts</option><option value="missing" @selected(($filters['amount_status'] ?? '') === 'missing')>Amount needed</option></select></label>
             @endif
@@ -39,6 +46,7 @@
 </header>
 @if ($canManage)
     <div id="missing-amount-notice" class="notice" @if ($missingAmountCount === 0) hidden @endif><strong>@if ($missingAmountCount > 0){{ $missingAmountCount }} voucher(s) need an amount.@endif</strong> <a class="subtle-link" href="{{ route('vouchers.index', ['amount_status' => 'missing']) }}">View vouchers missing amounts</a></div>
+    <div id="missing-category-notice" class="notice" @if ($missingCategoryCount === 0) hidden @endif><strong>@if ($missingCategoryCount > 0){{ $missingCategoryCount }} voucher(s) need a category.@endif</strong> <a class="subtle-link" href="{{ route('vouchers.index', ['utility_status' => 'missing']) }}">View vouchers needing a category</a></div>
 @endif
 <div class="library-results @if ($selectedVoucher) library-has-preview @endif">
 <section class="panel table-panel library-table"><div class="panel-heading"><div><h2>Stored vouchers</h2><p class="muted">{{ number_format($vouchers->total()) }} {{ $vouchers->total() === 1 ? 'record' : 'records' }}</p></div></div>
@@ -75,7 +83,7 @@
         @php($voucherMonth = \Carbon\Carbon::create()->month($voucher->month)->format('F'))
         <tr role="row" class="voucher-record" data-voucher-preview data-preview-folder="{{ $voucher->type }}" data-preview-period="{{ $voucherMonth }} {{ $voucher->year }}" @if ($loop->first) data-preview-selected @endif>
             @if ($canManage)<td role="cell" class="management-cell"><label class="pdf-selection"><input type="checkbox" name="voucher_ids[]" value="{{ $voucher->id }}" form="delete-selected-form" data-select-pdf><span class="sr-only">Select PDF for DV {{ $voucher->dv_number }}, {{ $voucher->payee }}</span></label></td>@endif
-            <td role="cell" class="voucher-dv" data-label="DV number"><a class="record-link" href="{{ route('vouchers.show', $voucher) }}">{{ $voucher->dv_number }}</a></td><td role="cell" class="voucher-check" data-label="Check / ADA">{{ $voucher->checkada_no }}</td><td role="cell" class="voucher-payee" data-label="Payee">{{ $voucher->payee }}</td><td role="cell" class="amount" data-label="Amount" data-saved-amount data-saved-voucher-id="{{ $voucher->id }}">@if ($voucher->amount === null)<span class="tag">{{ $voucher->amount_status === 'pending' ? 'Reading amount…' : 'Amount needed' }}</span>@else PHP {{ number_format((float) $voucher->amount, 2) }}@endif</td><td role="cell" class="voucher-folder" data-label="Folder"><span class="tag">{{ $voucher->type }}</span><span class="muted">{{ $voucher->year }}</span></td>
+            <td role="cell" class="voucher-dv" data-label="DV number"><a class="record-link" href="{{ route('vouchers.show', $voucher) }}">{{ $voucher->dv_number }}</a></td><td role="cell" class="voucher-check" data-label="Check / ADA">{{ $voucher->checkada_no }}</td><td role="cell" class="voucher-payee" data-label="Payee"><span data-library-payee>{{ $voucher->payee }}</span>@if (in_array($voucher->utility_category, ['electricity', 'water'], true)) <span class="tag">{{ \App\VoucherUtilityCategory::LABELS[$voucher->utility_category] }}</span>@endif</td><td role="cell" class="amount" data-label="Amount" data-saved-amount data-saved-voucher-id="{{ $voucher->id }}">@if ($voucher->amount === null)<span class="tag">{{ $voucher->amount_status === 'pending' ? 'Reading amount…' : 'Amount needed' }}</span>@else PHP {{ number_format((float) $voucher->amount, 2) }}@endif</td><td role="cell" class="voucher-folder" data-label="Folder"><span class="tag">{{ $voucher->type }}</span><span class="muted">{{ $voucher->year }}</span></td>
             <td role="cell" class="voucher-month" data-label="Month">{{ $voucherMonth }}</td>
             <td role="cell" class="voucher-actions">
                 <div class="voucher-action-list">

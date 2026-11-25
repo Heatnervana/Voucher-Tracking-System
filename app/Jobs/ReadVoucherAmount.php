@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\PdfAmountReader;
+use App\VoucherUtilityCategory;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Cache;
@@ -20,7 +21,7 @@ class ReadVoucherAmount implements ShouldQueue
     /**
      * TRUST-BOUNDARY: Only uploader-generated UUIDs should populate fileId; clients never supply a parser path.
      */
-    public function __construct(public string $fileId)
+    public function __construct(public string $fileId, public ?string $nameUtility = null)
     {
         // SECURITY: Keep OCR off the HTTP process even when the default queue is synchronous.
         $this->onConnection('database')->onQueue('voucher-ocr');
@@ -39,10 +40,15 @@ class ReadVoucherAmount implements ShouldQueue
             return;
         }
 
-        $amount = $reader->read($disk->path($path));
+        $file = $disk->path($path);
+        $nameUtility = $this->nameUtility ?? null;
+        $details = isset(VoucherUtilityCategory::LABELS[$nameUtility])
+            ? ['amount' => $reader->read($file), 'utility' => null]
+            : $reader->readDetails($file);
+        $amount = $details['amount'];
 
         if (Cache::has($key) && $disk->exists($path)) {
-            Cache::put($key, ['status' => $amount === null ? 'manual' : 'ready', 'amount' => $amount], now()->addDay());
+            Cache::put($key, ['status' => $amount === null ? 'manual' : 'ready', 'amount' => $amount, 'utility' => $details['utility']], now()->addDay());
         }
     }
 

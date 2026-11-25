@@ -11,7 +11,7 @@ class Voucher extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['checkada_no', 'dv_number', 'payee', 'amount', 'amount_status', 'amount_retry_count', 'amount_read_token', 'year', 'type', 'month', 'file_path', 'uploaded_by'];
+    protected $fillable = ['checkada_no', 'dv_number', 'payee', 'amount', 'amount_status', 'amount_retry_count', 'amount_read_token', 'utility_category', 'utility_status', 'year', 'type', 'month', 'file_path', 'uploaded_by'];
 
     protected function casts(): array
     {
@@ -36,6 +36,11 @@ class Voucher extends Model
     public function scopeNeedsAmount(Builder $query): void
     {
         $query->whereNull('amount')->where('amount_status', 'manual');
+    }
+
+    public function scopeNeedsUtilityCategory(Builder $query): void
+    {
+        $query->whereNull('utility_category')->where('utility_status', 'manual');
     }
 
     public function scopeWithVoucherNumbers(Builder $query, string $checkNumber, string $dvNumber): void

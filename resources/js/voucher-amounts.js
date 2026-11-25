@@ -36,6 +36,14 @@ export function watchVoucherAmounts(review) {
                 const amount = result.files[field.row.dataset.fileId];
                 if (!amount || amount.status === 'pending') return;
                 field.row.dataset.amountStatus = amount.status;
+                const categoryHelp = field.row.querySelector('[data-review-category]');
+                if (categoryHelp && 'category_status' in amount) {
+                    categoryHelp.textContent = amount.category === 'electricity' ? 'Detected category: Electricity'
+                        : amount.category === 'water' ? 'Detected category: Water'
+                            : amount.category_status === 'manual' ? 'Category needed. Check the notification bell after saving.'
+                                : '';
+                    categoryHelp.hidden = categoryHelp.textContent === '';
+                }
                 if (amount.status === 'ready' && !field.edited && field.input.value === '') {
                     field.input.value = amount.amount;
                 }

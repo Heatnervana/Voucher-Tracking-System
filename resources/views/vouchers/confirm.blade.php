@@ -20,7 +20,7 @@
         @csrf
         <input type="hidden" name="batch_id" value="{{ $upload['batch_id'] }}">
         @if (($upload['folder_action'] ?? 'keep') === 'replace')
-            <div class="notice folder-warning"><strong>Replacement enabled for this month.</strong> Saving will replace PDFs whose Check / ADA and DV numbers both match in {{ $upload['year'] }} / {{ $upload['type'] }} / {{ sprintf('%02d', $upload['month']) }}. Other saved PDFs will stay in the library.</div>
+            <div class="notice folder-warning"><strong>Replacement allowed for this folder.</strong> A saved PDF is replaced only if its Check / ADA and DV numbers both match an uploaded voucher in this folder. Vouchers with a new pair are added.</div>
         @endif
         <div id="review-file-list" class="review-file-list">
             @foreach ($upload['files'] as $id => $file)
@@ -49,6 +49,12 @@
                             <small>You can save with a blank amount. If reading fails, the bell will remind you to add it.</small>
                             <small data-amount-help role="status" aria-live="polite">{{ $file['amount_status'] === 'pending' ? 'Reading amount in the background. Reading will continue after you save.' : ($file['detected_amount'] ? 'Automatically read from the PDF. Please check before saving.' : 'The amount could not be read confidently. Enter it yourself or leave it blank to add later.') }}</small>
                         </label>
+                        @php($categoryMessage = $file['detected_category'] ? 'Detected category: '.\App\VoucherUtilityCategory::LABELS[$file['detected_category']] : match ($file['utility_status']) {
+                            'pending', 'pending_required' => 'Reading category…',
+                            'manual' => 'Category needed. Check the notification bell after saving.',
+                            default => '',
+                        })
+                        <p class="hint" data-review-category role="status" @if ($categoryMessage === '')hidden @endif>{{ $categoryMessage }}</p>
                     </div>
                     <button class="button secondary remove-staged-file" type="button" data-remove-file="{{ $id }}">Remove this PDF from upload</button>
                 </article>

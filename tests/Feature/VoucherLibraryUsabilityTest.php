@@ -61,7 +61,7 @@ class VoucherLibraryUsabilityTest extends TestCase
         foreach ($xpath->query('//form[@role="search"]//select[not(ancestor::details)]') as $filter) {
             $filterNames[] = $filter->getAttribute('name');
         }
-        $this->assertSame(['type', 'year', 'month', 'amount_status'], $filterNames);
+        $this->assertSame(['type', 'year', 'month', 'category', 'amount_status'], $filterNames);
         $response->assertDontSee('More filters');
         $this->assertSame('Sample supplier', trim($xpath->query('//*[@data-preview-title]')->item(0)->textContent));
         $this->assertSame('PHP 25.00', trim($xpath->query('//*[@data-preview-amount]')->item(0)->textContent));

@@ -35,10 +35,11 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('manage-accounts', fn (User $user): bool => $user->is_admin === true);
         View::composer('layouts.app', function (BladeView $view): void {
             $user = auth()->user();
-            $count = $user && $user->can('manage-vouchers') && ! $user->must_change_password
-                ? ($view->getData()['missingAmountCount'] ?? Voucher::needsAmount()->count())
-                : 0;
-            $view->with('notificationAmountCount', $count);
+            $canManage = $user && $user->can('manage-vouchers') && ! $user->must_change_password;
+            $view->with([
+                'notificationAmountCount' => $canManage ? ($view->getData()['missingAmountCount'] ?? Voucher::needsAmount()->count()) : 0,
+                'notificationCategoryCount' => $canManage ? ($view->getData()['missingCategoryCount'] ?? Voucher::needsUtilityCategory()->count()) : 0,
+            ]);
         });
     }
 }

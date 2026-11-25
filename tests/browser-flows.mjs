@@ -165,6 +165,7 @@ test('real Edge voucher workflows use isolated data', { timeout: 360000 }, async
         ['BROWSER_TEST_DUPLICATE_ONLY', 'duplicate warning'],
         ['BROWSER_TEST_USABILITY_ONLY', 'library usability'],
         ['BROWSER_TEST_MISSING_AMOUNT_ONLY', 'a voucher saves without'],
+        ['BROWSER_TEST_UTILITY_CATEGORY_ONLY', 'utility category workflow'],
     ];
     const focus = focusedWorkflows.find(([variable]) => process.env[variable] === '1')?.[1];
     const runTest = (name, callback) => t.test(name, {
@@ -860,6 +861,67 @@ test('real Edge voucher workflows use isolated data', { timeout: 360000 }, async
             await page.wait("document.querySelector('#selected-pdf-count')?.textContent === '0 PDFs selected'");
             assert.equal(inspect().vouchers, 311);
             assert.equal(inspect().saved_pdfs, 311);
+        });
+
+        await runTest('utility category workflow reads two first-page descriptions and flags the unresolved PDF', async () => {
+            const folder = join(directory, 'inputs', 'Utility vouchers');
+            await mkdir(join(folder, 'nested'), { recursive: true });
+            const makeVoucher = description => {
+                const stream = `BT /F1 15 Tf 45 740 Td (DISBURSEMENT VOUCHER) Tj ET\n`
+                    + `BT /F1 14 Tf 40 650 Td (Description:) Tj ET\n`
+                    + `BT /F1 14 Tf 130 650 Td (${description}) Tj ET\n`
+                    + 'BT /F1 14 Tf 480 660 Td (Amount) Tj 0 -25 Td (5250.00) Tj ET\n';
+                const objects = [
+                    '<< /Type /Catalog /Pages 2 0 R >>',
+                    '<< /Type /Pages /Count 1 /Kids [3 0 R] >>',
+                    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>',
+                    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+                    `<< /Length ${Buffer.byteLength(stream)} >>\nstream\n${stream}endstream`,
+                ];
+                let pdf = '%PDF-1.4\n';
+                const offsets = objects.map((object, index) => {
+                    const offset = Buffer.byteLength(pdf);
+                    pdf += `${index + 1} 0 obj\n${object}\nendobj\n`;
+                    return `${String(offset).padStart(10, '0')} 00000 n \n`;
+                });
+                return `${pdf}xref\n0 6\n0000000000 65535 f \n${offsets.join('')}trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${Buffer.byteLength(pdf)}\n%%EOF\n`;
+            };
+            await writeFile(join(folder, '8101_2026008101_SAMPLE ONE.pdf'), makeVoucher('Payment of electrical services consumption'));
+            await writeFile(join(folder, 'nested', '8102_2026008102_PRIMEWATER INFRASTRUCTURE CORP.pdf'), makeVoucher('Payment of electrical services consumption'));
+            await writeFile(join(folder, '8103_2026008103_SAMPLE THREE.pdf'), makeVoucher('Payment of utility bills'));
+            await writeFile(join(folder, '8104_2026008104_OFFICE SUPPLIES.pdf'), makeVoucher('Purchase of office stationery'));
+
+            await page.navigate(`${origin}/vouchers/upload`);
+            assert.equal(await page.evaluate("document.querySelector('[name=utility_batch]') === null"), true);
+            await page.evaluate("document.querySelector('[name=type]').value='CHECK'; document.querySelector('[name=month]').value='2'");
+            await page.files('#voucher-folder-input', [folder]);
+            await page.wait("document.querySelector('#voucher-folder-input').files.length === 4");
+            await page.click('#voucher-upload-button');
+            await page.wait("location.pathname === '/vouchers/confirm' && document.querySelectorAll('[data-review-item]').length === 4");
+            assert.equal(await page.evaluate("document.querySelector('[data-review-item] select') === null"), true);
+            await page.wait("document.body.textContent.includes('Detected category: Water')");
+            await Promise.all([runWorker(), page.wait("document.body.textContent.includes('Detected category: Electricity') && document.body.textContent.includes('Detected category: Water') && document.body.textContent.includes('Category needed.') && [...document.querySelectorAll('[data-review-item]')].find(row => row.textContent.includes('OFFICE SUPPLIES'))?.querySelector('[data-review-category]')?.hidden", 80000)]);
+            await page.click('#voucher-finalize-form button[type=submit].primary');
+            await page.wait("location.pathname === '/vouchers' && document.body.textContent.includes('4 voucher(s) saved.')");
+            assert.equal(inspect().saved_pdfs, 4);
+            await page.navigate(`${origin}/vouchers?category=water`);
+            await page.wait("document.querySelector('.voucher-record')?.textContent.includes('PRIMEWATER')");
+            assert.equal(await page.evaluate("document.querySelectorAll('.voucher-record').length"), 1);
+            await page.click('#amount-notification');
+            await page.wait("new URL(location.href).searchParams.get('needs_review') === '1' && document.querySelector('#missing-category-notice')?.hidden === false");
+            await page.click('#missing-category-notice a');
+            await page.wait("new URL(location.href).searchParams.get('utility_status') === 'missing' && document.querySelector('.voucher-record')?.textContent.includes('SAMPLE THREE')");
+            await page.click('.voucher-record .record-link');
+            await page.wait("document.querySelector('[data-saved-category]')?.textContent === 'Category needed'");
+            await page.evaluate("document.querySelector('[name=utility_category]').value='water'");
+            await page.click("form[action$='/category'] button[type=submit]");
+            await page.wait("document.querySelector('[data-saved-category]')?.textContent === 'Water' && !document.querySelector('#amount-notification').getAttribute('aria-label').includes('needs a category')");
+            await page.evaluate("const choice = document.querySelector('[name=utility_category]'); choice.closest('details').open = true; choice.value = 'other'");
+            await page.click("form[action$='/category'] button[type=submit]");
+            await page.wait("document.querySelector('[data-saved-category-row]')?.hidden === true && !document.querySelector('#amount-notification').getAttribute('aria-label').includes('needs a category')");
+            await page.navigate(origin + '/vouchers?q=2026008104');
+            await page.click('.voucher-record .record-link');
+            await page.wait("document.querySelector('[data-saved-category-row]')?.hidden === true && !document.body.textContent.includes('Uncategorized')");
         });
 
         await runTest('a real scanned PDF flows through HTTP upload, standalone OCR, browser polling and saving', async () => {
